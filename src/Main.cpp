@@ -7,6 +7,20 @@
 
 int main(int argc, char * argv[])
 {
-    std::cout << "Hello World" << std::endl;
+	cv::VideoCapture cap(0);
+	cv::namedWindow("Cam", CV_WINDOW_AUTOSIZE);
+
+	if(cap.isOpened())
+	{
+
+		for(;;)
+		{
+			cv::Mat image;
+			cap >> image;
+			cv::imshow("Cam", image);
+			if(cv::waitKey(30) >= 0) break;
+		}
+
+	}
 }
 
