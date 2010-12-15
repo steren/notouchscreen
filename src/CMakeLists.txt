@@ -1,6 +1,7 @@
 include_directories(
-    ${opencvtest}_SOURCE_DIR}/src 
-    ${opencvtest}_BINARY_DIR}/src
+    ${opencvtest_SOURCE_DIR}/src
+    ${opencvtest_SOURCE_DIR}/src/models 
+    ${opencvtest_BINARY_DIR}/src
 	)
 
 set(ADDITIONAL_LIBRARIES)
@@ -12,9 +13,11 @@ if(OPENCV_FOUND)
 	include_directories(${OPENCV_INCLUDEDIR})
 endif()
 						
-file(GLOB SRCS_FILES *.cpp)
+file(GLOB SRCS_FILES 
+		*.cpp 
+		models/*.cpp)
 
-add_executable(${PROJECT_NAME} ${SRCS_FILES}) 
+add_executable(${PROJECT_NAME} Main.cpp ${SRCS_FILES}) 
 # install(TARGETS freebalance DESTINATION ./)
 
 ### Linking ###
