@@ -1,6 +1,6 @@
 include_directories(
-    ${opencvtest}_SOURCE_DIR}/src 
-    ${opencvtest}_BINARY_DIR}/src
+    ${notouchscreen_SOURCE_DIR}/src 
+    ${notouchscreen_BINARY_DIR}/src
 	)
 
 set(ADDITIONAL_LIBRARIES)
