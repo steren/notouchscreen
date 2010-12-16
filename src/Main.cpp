@@ -8,30 +8,35 @@ using namespace cv;
 
 int main(int argc, char * argv[])
 {
-	cv::VideoCapture cap(0);
-	cv::namedWindow("Cam", CV_WINDOW_AUTOSIZE);
+	cv::VideoCapture cap1(0);
+	cv::namedWindow("Visu", CV_WINDOW_AUTOSIZE);
 
-	if(cap.isOpened())
+	if(cap1.isOpened())
 	{
-		cv::Mat frame;
-		cap >> frame;
-		ImageFifo imageFifo(3, frame);
+		cv::Mat frames[2];
+		int currentFrame = 0;
+		int nextFrame = 1;
+
+		cv::Mat currentCap;
+		cap1 >> currentCap;
+
+		Scalar t(0);
+		cv::Mat empty(currentCap.size(),currentCap.type(),t);
+		frames[0] = empty.clone();
+		frames[1] = empty.clone();
+
+		cv::Mat silhouette;
 		for(;;)
 		{
-			imageFifo.pushImage(cap);
-
-			cv::imshow("Cam", imageFifo.getLast());
-			/*
-			cv::Mat edges;
-			cv::Mat image;
-			cap >> image;
-	        cv::cvtColor(image, edges, CV_BGR2GRAY);
-	        cv::GaussianBlur(edges, edges, cv::Size(25,25), 10, 10);
-			cv::imshow("Cam", edges);
-			*/
+			nextFrame = (currentFrame+1)%2;
+			cap1 >> currentCap;
+			frames[currentFrame] = currentCap.clone();
+			currentCap.copyTo(frames[currentFrame]);
+			cv::absdiff(frames[currentFrame],frames[nextFrame],silhouette);
+			cv::imshow("Visu",silhouette);
 			if(cv::waitKey(30) >= 0) break;
+			currentFrame = nextFrame;
 		}
-
 	}
 
 	return 0;
