@@ -1,9 +1,6 @@
 #include <iostream>
 #include <vector>
-#include <cv.h>
-#include <cv.hpp>
-#include <highgui.h>
-#include <highgui.hpp>
+#include "OpenCVLibs.h"
 #include "ImageFifo.h"
 
 using namespace cv;
@@ -18,7 +15,7 @@ int main(int argc, char * argv[])
 	{
 		cv::Mat frame;
 		cap >> frame;
-		ImageFifo imageFifo(3, frame.cols, frame.rows );
+		ImageFifo imageFifo(3, frame);
 		for(;;)
 		{
 			imageFifo.pushImage(cap);
@@ -36,5 +33,7 @@ int main(int argc, char * argv[])
 		}
 
 	}
+
+	return 0;
 }
 

@@ -8,32 +8,25 @@
 #ifndef IMAGEFIFO_H_
 #define IMAGEFIFO_H_
 
+#include "Types.h"
+#include "Fifo.hpp"
+#include "OpenCVLibs.h"
+
 #include <list>
 #include <vector>
-#include <cv.h>
-#include <cv.hpp>
-#include <highgui.h>
-#include <highgui.hpp>
 
-class ImageFifo {
+class ImageFifo : public Fifo<cv::Mat> {
 public:
-	ImageFifo(const int& iSize, const int& iWidth, const int& iHeight);
+	ImageFifo(const int& iSize, cv::Mat iInit);
 	virtual ~ImageFifo();
-
-	cv::Mat& getFirst() const;
-	cv::Mat& getLast() const;
-
-	std::list<int>::const_iterator getBegin() const;
-	std::list<int>::const_iterator getEnd() const;
-
 	void pushImage(cv::VideoCapture& iCap);
 
 private:
-	void round();
-
-	std::list<int> m_pointers;
-	cv::Mat * m_images;
+	ImageFifo(const ImageFifo&);
+	ImageFifo& operator= (const ImageFifo&);
 };
+
+NTS_DeclareClassTypes(ImageFifo);
 
 
 #endif /* IMAGEFIFO_H_ */
