@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.6)
 include(CheckIncludeFileCXX)
 
-project (opencvtest)
+project (notouchscreen)
 
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
