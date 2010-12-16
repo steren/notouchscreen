@@ -46,9 +46,7 @@ void NoTouchScreen::MainLoop()
 			updateMotionHistory(silhouette, mhi, timestamp, DURATION);
 
 			// Display the MHI (need scaling)
-			convertScaleAbs(mhi,mhiVisu, 255./DURATION, (DURATION - timestamp)*255./DURATION );
-			//normalize(mhi,mhiVisu,255./DURATION,(DURATION - timestamp)*255./DURATION,NORM_L2,-1,mhi);
-			//convertScaleAbs(mhi, mhiVisu, 255./DURATION, 0. );
+			mhi.convertTo(mhiVisu, CV_8UC1, 255./DURATION, (DURATION - timestamp)*255./DURATION);
 			imshow("Motion History", mhiVisu);
 
 
