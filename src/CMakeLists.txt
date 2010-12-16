@@ -1,5 +1,6 @@
 include_directories(
     ${notouchscreen_SOURCE_DIR}/src 
+    ${notouchscreen_SOURCE_DIR}/src/models 
     ${notouchscreen_BINARY_DIR}/src
 	)
 
@@ -12,9 +13,11 @@ if(OPENCV_FOUND)
 	include_directories(${OPENCV_INCLUDEDIR})
 endif()
 						
-file(GLOB SRCS_FILES *.cpp)
+file(GLOB SRCS_FILES 
+		*.cpp 
+		models/*.cpp)
 
-add_executable(${PROJECT_NAME} ${SRCS_FILES}) 
+add_executable(${PROJECT_NAME} Main.cpp ${SRCS_FILES}) 
 # install(TARGETS freebalance DESTINATION ./)
 
 ### Linking ###
