@@ -8,6 +8,8 @@
 
 #include "NoTouchScreen.h"
 
+#include <ctime>
+
 NoTouchScreen::NoTouchScreen() {
 }
 
@@ -16,10 +18,12 @@ NoTouchScreen::~NoTouchScreen() {
 
 void NoTouchScreen::MainLoop()
 {
+	const double DURATION = 1;
 	using namespace cv;
 
 	VideoCapture cap1(0);
 	namedWindow("Visu", CV_WINDOW_AUTOSIZE);
+	namedWindow("Motion History", CV_WINDOW_AUTOSIZE);
 
 	if(cap1.isOpened())
 	{
@@ -30,15 +34,24 @@ void NoTouchScreen::MainLoop()
 		Mat currentCap;
 		cap1 >> currentCap;
 
-		Scalar t(0);
-		Mat empty(currentCap.size(),currentCap.type(),t);
-		frames[0] = empty.clone();
-		frames[1] = empty.clone();
-
 		Mat silhouette;
+		cv::Mat mhi(currentCap.size(), CV_32FC1); // the Motion History image
+		cv::Mat mhiVisu; // a display of the MHI
+		double timestamp;
 		for(;;)
 		{
 			Mat silhouette = GetNextSilhouette(cap1);
+
+			timestamp = (double)clock()/CLOCKS_PER_SEC;
+			updateMotionHistory(silhouette, mhi, timestamp, DURATION);
+
+			// Display the MHI (need scaling)
+			convertScaleAbs(mhi,mhiVisu, 255./DURATION, (DURATION - timestamp)*255./DURATION );
+			//normalize(mhi,mhiVisu,255./DURATION,(DURATION - timestamp)*255./DURATION,NORM_L2,-1,mhi);
+			//convertScaleAbs(mhi, mhiVisu, 255./DURATION, 0. );
+			imshow("Motion History", mhiVisu);
+
+
 			imshow("Visu",silhouette);
 			if(waitKey(30) >= 0) break;
 		}
