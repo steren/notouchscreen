@@ -7,7 +7,7 @@
  */
 
 #include "NoTouchScreen.h"
-
+#include <iostream>
 #include <ctime>
 
 NoTouchScreen::NoTouchScreen() {
@@ -37,6 +37,8 @@ void NoTouchScreen::MainLoop()
 		Mat silhouette;
 		Mat mhi(currentCap.size(), CV_32FC1); // the Motion History image
 
+		Mat mask, orientation;
+
 		Mat mhiVisu; // a display of the MHI
 		Mat capGray;
 		Mat compositingVisu;
@@ -51,12 +53,27 @@ void NoTouchScreen::MainLoop()
 
 			// Display the MHI (need scaling)
 			mhi.convertTo(mhiVisu, CV_8UC1, 255./DURATION, (DURATION - timestamp)*255./DURATION);
-			imshow("Motion History", mhiVisu);
 
-			// Display the Motion History on the original image, just for fun.
+			// Add the Motion History on the original image, just for fun.
 			cvtColor( currentCap, capGray, CV_BGR2GRAY );
 			cv::add( capGray, mhiVisu, compositingVisu);
+
+			cv::calcMotionGradient( mhi, mask, orientation, 0.5, 0.05);
+			double angle = cv::calcGlobalOrientation(orientation, mask, mhi, timestamp, DURATION);
+
+			// Display Orientation with a line
+			if(angle != 0) {
+				/*
+				// print angle value
+				std::ostringstream s;
+				s << angle;
+				cv::putText(compositingVisu, s.str(), Point(20,20), 1, 1, 255);
+				*/
+				cv::line(compositingVisu, Point(30,30), Point(30 + 30*cos(angle*CV_PI/180), 30 + 30*sin(angle*CV_PI/180) ),255, 1);
+			}
+
 			imshow("Visu", compositingVisu);
+			imshow("Motion History", mhiVisu);
 
 			if(waitKey(30) >= 0) break;
 		}
