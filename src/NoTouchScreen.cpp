@@ -18,7 +18,7 @@ NoTouchScreen::~NoTouchScreen() {
 
 void NoTouchScreen::MainLoop()
 {
-	const double DURATION = 1;
+	const double DURATION = 0.5;
 	using namespace cv;
 
 	VideoCapture cap1(0);
@@ -35,8 +35,12 @@ void NoTouchScreen::MainLoop()
 		cap1 >> currentCap;
 
 		Mat silhouette;
-		cv::Mat mhi(currentCap.size(), CV_32FC1); // the Motion History image
-		cv::Mat mhiVisu; // a display of the MHI
+		Mat mhi(currentCap.size(), CV_32FC1); // the Motion History image
+
+		Mat mhiVisu; // a display of the MHI
+		Mat capGray;
+		Mat compositingVisu;
+
 		double timestamp;
 		for(;;)
 		{
@@ -49,8 +53,11 @@ void NoTouchScreen::MainLoop()
 			mhi.convertTo(mhiVisu, CV_8UC1, 255./DURATION, (DURATION - timestamp)*255./DURATION);
 			imshow("Motion History", mhiVisu);
 
+			// Display the Motion History on the original image, just for fun.
+			cvtColor( currentCap, capGray, CV_BGR2GRAY );
+			cv::add( capGray, mhiVisu, compositingVisu);
+			imshow("Visu", compositingVisu);
 
-			imshow("Visu",silhouette);
 			if(waitKey(30) >= 0) break;
 		}
 	}
@@ -78,6 +85,8 @@ cv::Mat& NoTouchScreen::GetNextSilhouette(cv::VideoCapture& iCap)
 	static Mat diff;
 	gray.copyTo(frames[currentFrame]);
 	absdiff(frames[currentFrame],frames[nextFrame],diff);
+
+	cv::GaussianBlur(diff, diff, cv::Size(15,15), 5, 5);
 
 	static Mat silhouette;
 	threshold(diff, silhouette, NTS_SILHOUETTE_THRESHOLD, NTS_SILHOUETTE_VALUE,THRESH_BINARY);

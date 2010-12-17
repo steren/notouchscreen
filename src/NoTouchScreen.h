@@ -10,7 +10,7 @@
 
 #include "OpenCVLibs.h"
 
-#define NTS_SILHOUETTE_THRESHOLD 100.0
+#define NTS_SILHOUETTE_THRESHOLD 20.0
 #define NTS_SILHOUETTE_VALUE 255
 
 class NoTouchScreen {
