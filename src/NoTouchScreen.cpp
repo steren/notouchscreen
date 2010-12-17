@@ -1,8 +1,9 @@
-/*
- * NoTouchScreen.cpp
+/**
+ * NoTouchScreen implementation
  *
  *  Created on: 16 déc. 2010
- *      Author: canard
+ *      @author canard (jeanbernard.jansen@gmail.com)
+ *      @author steren (steren.giannini@gmail.com)
  */
 
 #include "NoTouchScreen.h"
@@ -51,13 +52,13 @@ cv::Mat& NoTouchScreen::GetNextSilhouette(cv::VideoCapture& iCap)
 	static Mat currentCap;
 	// Getting the current image;
 	iCap >> currentCap;
+
+	// Computing gray in one channel image
 	static Mat gray;
 	cvtColor( currentCap, gray, CV_BGR2GRAY );
 
-//	iCap >> currentCap;
-//	std::vector<Mat> channels;
-//	split(currentCap,channels);
-
+	// Initialising frames cache with static variables
+	// It avoids to reallocate them each time
 	static Mat frames[2] = {gray.clone(), gray.clone()};
 	static unsigned int currentFrame = 0;
 	unsigned int nextFrame = (currentFrame+1)%2;
@@ -68,7 +69,7 @@ cv::Mat& NoTouchScreen::GetNextSilhouette(cv::VideoCapture& iCap)
 	absdiff(frames[currentFrame],frames[nextFrame],diff);
 
 	static Mat silhouette;
-	threshold(diff, silhouette, 100., 255,THRESH_BINARY);
+	threshold(diff, silhouette, NTS_SILHOUETTE_THRESHOLD, NTS_SILHOUETTE_VALUE,THRESH_BINARY);
 
 	currentFrame = nextFrame;
 	return silhouette;

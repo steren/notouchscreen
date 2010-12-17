@@ -1,7 +1,5 @@
 include_directories(
     ${notouchscreen_SOURCE_DIR}/src 
-    ${notouchscreen_SOURCE_DIR}/src/models
-    ${notouchscreen_SOURCE_DIR}/src/descriptors
     ${notouchscreen_SOURCE_DIR}/src/templates 
     ${notouchscreen_BINARY_DIR}/src
 	)
@@ -17,8 +15,6 @@ endif()
 						
 file(GLOB SRCS_FILES 
 		*.cpp 
-		models/*.cpp
-		src/descriptors/*.cpp
 		)
 
 add_executable(${PROJECT_NAME} Main.cpp ${SRCS_FILES}) 
