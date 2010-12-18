@@ -18,7 +18,17 @@ NoTouchScreen::~NoTouchScreen() {
 
 void NoTouchScreen::MainLoop()
 {
-	const double DURATION = 0.5;
+	const double DURATION 	= 0.7;
+
+	const int SCORE_FRAMES 	= 20;
+	const int SCORE_WIN 	= 10;
+
+	const double SCORE_THRESHOLD = 30;
+	const double SCORE_GOAL_LEFT 	= 0;
+	const double SCORE_GOAL_UP 		= 90;
+	const double SCORE_GOAL_RIGHT 	= 180;
+	const double SCORE_GOAL_DOWN 	= 360;
+
 	using namespace cv;
 
 	VideoCapture cap1(0);
@@ -43,6 +53,13 @@ void NoTouchScreen::MainLoop()
 		Mat capGray;
 		Mat compositingVisu;
 
+		int scores[SCORE_FRAMES];
+		int scoreIndex = 0;
+
+		for( int i = 0; i < SCORE_FRAMES; i++) {
+			scores[i] = 0;
+		}
+
 		double timestamp;
 		for(;;)
 		{
@@ -61,21 +78,41 @@ void NoTouchScreen::MainLoop()
 			cv::calcMotionGradient( mhi, mask, orientation, 0.5, 0.05);
 			double angle = cv::calcGlobalOrientation(orientation, mask, mhi, timestamp, DURATION);
 
+			scoreIndex = scoreIndex++ % SCORE_FRAMES;
+			if( angle != 0 && std::abs(angle - SCORE_GOAL_LEFT) < SCORE_THRESHOLD) {
+				scores[scoreIndex] = 1;
+			} else {
+				scores[scoreIndex] = 0;
+			}
+
+			int sum = 0;
+			for( int i = 0; i < SCORE_FRAMES; i++) {
+				sum += scores[i];
+			}
+
+			std::ostringstream ss;
+			ss << sum;
+			cv::putText(compositingVisu, "Score: " + ss.str(), Point(20,100), 1, 1, 255);
+
+			if(sum >= SCORE_WIN) {
+				cv::putText(compositingVisu, "LEFT", Point(50,50), 1, 1, 255);
+			}
+
+
 			// Display Orientation with a line
 			if(angle != 0) {
-				/*
 				// print angle value
 				std::ostringstream s;
 				s << angle;
 				cv::putText(compositingVisu, s.str(), Point(20,20), 1, 1, 255);
-				*/
+
 				cv::line(compositingVisu, Point(30,30), Point(30 + 30*cos(angle*CV_PI/180), 30 + 30*sin(angle*CV_PI/180) ),255, 1);
 			}
 
 			imshow("Visu", compositingVisu);
 			imshow("Motion History", mhiVisu);
 
-			if(waitKey(30) >= 0) break;
+			if(waitKey(2) >= 0) break;
 		}
 	}
 }
