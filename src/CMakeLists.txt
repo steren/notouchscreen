@@ -8,9 +8,14 @@ set(ADDITIONAL_LIBRARIES)
 
 ### OpenCV support ###
 include(FindPkgConfig)
-pkg_search_module(OPENCV REQUIRED opencv)
+pkg_search_module(OPENCV opencv)
 if(OPENCV_FOUND)
 	include_directories(${OPENCV_INCLUDEDIR})
+else()
+	FIND_PACKAGE(OpenCV REQUIRED)
+	include_directories(${OpenCV_INCLUDE_DIRS})
+	set(ADDITIONAL_LIBRARIES ${OpenCV_LIBS})
+	message(${OpenCV_INCLUDE_DIRS})
 endif()
 						
 file(GLOB SRCS_FILES 

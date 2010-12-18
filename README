@@ -1,9 +1,94 @@
-You need CMake and OpenCV (dev version)
+Hello !
 
-To compile and launch :
 
-mkdir build
-cd build
-cmake ../
-make
-./src/opencvtest
+INSTALLATION INSTRUCTIONS
+
+NoTouchScreen is not available as a precompiled packahe, so you need
+to compile it.
+
+ _____________________________________
+|                                     |
+|  How to compile on Linux            |
+|_____________________________________|
+
+It is easier than on Windows
+
+- Install cmake
+- Install OpenCV with the "dev" and "cv-highgui" packages.
+Simple way: install any package related to OpenCV ^^
+- Install GCC (of course)
+- Install make
+- Download the source or
+- Install git and git@github.com:Steren/notouchscreen.git wherever
+you want to.
+- cd notouchscreen
+- mkdir Build
+- cd Build
+- cmake ../
+- make
+
+To launch, from the same directory:
+- ./src/notouchscreen
+
+
+ _____________________________________
+|                                     |
+|  How to compile on Windows platform |
+|_____________________________________|
+
+
+
+1) Install the tools:
+
+- Install CMake: www.cmake.org. Accept to put Cmake in your path when asked
+for in the installation wizard.
+- Install Visual C++. If you dont have a license for Visual Studio Pro,
+you can download and install Visual Studio Express 2010. It is free !
+Find it here: http://www.microsoft.com/express/Downloads/
+If you want to compile on a 64 bits platform, you also need the Microsoft
+Windows SDK, which is free too.
+- Optional: Install Qt. OpenCV can use it if you want for highgui features.
+
+
+2) Compile OpenCV
+
+It is necessary to build OpenCV yourself in order to get the OpenCV
+dev files easily found by Cmake when compiling NoTouchScreen. Download
+the soucre at http://opencv.willowgarage.com
+
+- Extract the tarball in a folder. We call it "OpenCVSrcFolder". Be careful
+you may not delete this folder after installation.
+- Create folder "C:\Program Files\OpenCVX.X with X.X the version of OpenCV,
+or whatever you want, it does not matter.
+- Launch a Visual Studio command line. Do not use a basic "cmd" window.
+It is available from the start menu.
+- Get into C:/Program Files/OpenCVX.X
+- Type cmake -G "NMake Makefiles" C:\path\to\OpenCVSrcFolder
+- Type nmake, and go get a coffee.
+- When finished, type nmake install
+- When finished, add manually "C:\Program Files\OpenCVX.X\bin"
+in you system path.
+
+3) Get notouchscreen
+
+- You can download a archive if possible, if not, you'll have to
+retrieve the source from Git hub.
+- To do it, what I've done is installing MinGW then Msysgit which
+is available here: http://code.google.com/p/msysgit/
+- When asked for, accept to put "git" in your path.
+- Launch a MinGW shell (available from the start menu).
+- Get in a folder such as /c/Users/you/whateverplaceyouwant
+- git clone git@github.com:Steren/notouchscreen.git
+
+4) Compile notouchscreen
+
+- Launch a Visual Studio command line. Do not use a basic "cmd" window.
+It is available from the start menu.
+- Get into C:\Users\you\whateverplaceyouwant
+- mkdir Build
+- cd Build
+- cmake -G "NMake Makefiles" ..\
+- nmake
+
+5) To launch, navigate to C:\Users\you\whateverplaceyouwant\Build\src
+then double click "notouchscreen.exe"
