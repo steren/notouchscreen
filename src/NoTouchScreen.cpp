@@ -25,9 +25,7 @@ void NoTouchScreen::MainLoop()
 
 	const double SCORE_THRESHOLD = 30;
 	const double SCORE_GOAL_LEFT 	= 0;
-	const double SCORE_GOAL_UP 		= 90;
 	const double SCORE_GOAL_RIGHT 	= 180;
-	const double SCORE_GOAL_DOWN 	= 360;
 
 	using namespace cv;
 
@@ -53,11 +51,13 @@ void NoTouchScreen::MainLoop()
 		Mat capGray;
 		Mat compositingVisu;
 
-		int scores[SCORE_FRAMES];
+		int scoresLeft[SCORE_FRAMES];
+		int scoresRight[SCORE_FRAMES];
 		int scoreIndex = 0;
 
 		for( int i = 0; i < SCORE_FRAMES; i++) {
-			scores[i] = 0;
+			scoresLeft[i] = 0;
+			scoresRight[i] = 0;
 		}
 
 		double timestamp;
@@ -80,22 +80,33 @@ void NoTouchScreen::MainLoop()
 
 			scoreIndex = scoreIndex++ % SCORE_FRAMES;
 			if( angle != 0 && std::abs(angle - SCORE_GOAL_LEFT) < SCORE_THRESHOLD) {
-				scores[scoreIndex] = 1;
+				scoresLeft[scoreIndex] = 1;
 			} else {
-				scores[scoreIndex] = 0;
+				scoresLeft[scoreIndex] = 0;
+			}
+			if( angle != 0 && std::abs(angle - SCORE_GOAL_RIGHT) < SCORE_THRESHOLD) {
+				scoresRight[scoreIndex] = 1;
+			} else {
+				scoresRight[scoreIndex] = 0;
 			}
 
-			int sum = 0;
+			int sumLeft 	= 0;
+			int sumRight 	= 0;
 			for( int i = 0; i < SCORE_FRAMES; i++) {
-				sum += scores[i];
+				sumLeft += scoresLeft[i];
+				sumRight += scoresRight[i];
 			}
 
+			/*
 			std::ostringstream ss;
-			ss << sum;
+			ss << sumLeft;
 			cv::putText(compositingVisu, "Score: " + ss.str(), Point(20,100), 1, 1, 255);
-
-			if(sum >= SCORE_WIN) {
+			*/
+			if(sumLeft >= SCORE_WIN) {
 				cv::putText(compositingVisu, "LEFT", Point(50,50), 1, 1, 255);
+			}
+			if(sumRight >= SCORE_WIN) {
+				cv::putText(compositingVisu, "RIGHT", Point(50,50), 1, 1, 255);
 			}
 
 
