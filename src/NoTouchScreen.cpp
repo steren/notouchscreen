@@ -104,6 +104,8 @@ void NoTouchScreen::MainLoop()
 			// angle == 0 if no movement detected, this sucks.
 			if(angle != 0) {
 				frameDescriptors.push( FrameDescriptorBundle(RotationDescriptor(angle)) );
+			} else {
+				frameDescriptors.push( FrameDescriptorBundle(RotationDescriptor( std::rand() % 360 )) );
 			}
 			double distanceLeft = panLeft.compare(frameDescriptors);
 			printDoubleOnImage(compositingVisu, "Pan Left", distanceLeft, 80);
