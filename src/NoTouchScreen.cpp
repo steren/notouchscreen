@@ -18,7 +18,15 @@ NoTouchScreen::~NoTouchScreen() {
 
 void NoTouchScreen::MainLoop()
 {
-	const double DURATION = 0.5;
+	const double DURATION 	= 0.7;
+
+	const int SCORE_FRAMES 	= 20;
+	const int SCORE_WIN 	= 10;
+
+	const double SCORE_THRESHOLD = 30;
+	const double SCORE_GOAL_LEFT 	= 0;
+	const double SCORE_GOAL_RIGHT 	= 180;
+
 	using namespace cv;
 
 	VideoCapture cap1(0);
@@ -43,6 +51,15 @@ void NoTouchScreen::MainLoop()
 		Mat capGray;
 		Mat compositingVisu;
 
+		int scoresLeft[SCORE_FRAMES];
+		int scoresRight[SCORE_FRAMES];
+		int scoreIndex = 0;
+
+		for( int i = 0; i < SCORE_FRAMES; i++) {
+			scoresLeft[i] = 0;
+			scoresRight[i] = 0;
+		}
+
 		double timestamp;
 		for(;;)
 		{
@@ -61,21 +78,52 @@ void NoTouchScreen::MainLoop()
 			cv::calcMotionGradient( mhi, mask, orientation, 0.5, 0.05);
 			double angle = cv::calcGlobalOrientation(orientation, mask, mhi, timestamp, DURATION);
 
+			scoreIndex = scoreIndex++ % SCORE_FRAMES;
+			if( angle != 0 && std::abs(angle - SCORE_GOAL_LEFT) < SCORE_THRESHOLD) {
+				scoresLeft[scoreIndex] = 1;
+			} else {
+				scoresLeft[scoreIndex] = 0;
+			}
+			if( angle != 0 && std::abs(angle - SCORE_GOAL_RIGHT) < SCORE_THRESHOLD) {
+				scoresRight[scoreIndex] = 1;
+			} else {
+				scoresRight[scoreIndex] = 0;
+			}
+
+			int sumLeft 	= 0;
+			int sumRight 	= 0;
+			for( int i = 0; i < SCORE_FRAMES; i++) {
+				sumLeft += scoresLeft[i];
+				sumRight += scoresRight[i];
+			}
+
+			/*
+			std::ostringstream ss;
+			ss << sumLeft;
+			cv::putText(compositingVisu, "Score: " + ss.str(), Point(20,100), 1, 1, 255);
+			*/
+			if(sumLeft >= SCORE_WIN) {
+				cv::putText(compositingVisu, "LEFT", Point(50,50), 1, 1, 255);
+			}
+			if(sumRight >= SCORE_WIN) {
+				cv::putText(compositingVisu, "RIGHT", Point(50,50), 1, 1, 255);
+			}
+
+
 			// Display Orientation with a line
 			if(angle != 0) {
-				/*
 				// print angle value
 				std::ostringstream s;
 				s << angle;
 				cv::putText(compositingVisu, s.str(), Point(20,20), 1, 1, 255);
-				*/
+
 				cv::line(compositingVisu, Point(30,30), Point(30 + 30*cos(angle*CV_PI/180), 30 + 30*sin(angle*CV_PI/180) ),255, 1);
 			}
 
 			imshow("Visu", compositingVisu);
 			imshow("Motion History", mhiVisu);
 
-			if(waitKey(30) >= 0) break;
+			if(waitKey(2) >= 0) break;
 		}
 	}
 }
