@@ -2,16 +2,17 @@
 include(../config.cmake)
 configure_file(config.h.cmake config.h)
 
+### Commons includes ###
 include_directories(
     ${notouchscreen_SOURCE_DIR}/src
-    ${notouchscreen_BINARY_DIR}/src 
+    ${notouchscreen_BINARY_DIR}/src
     ${notouchscreen_SOURCE_DIR}/src/templates
     ${notouchscreen_SOURCE_DIR}/src/io
     ${notouchscreen_SOURCE_DIR}/src/exceptions
     ${notouchscreen_SOURCE_DIR}/src/gestures 
 	)
 
-set(ADDITIONAL_LIBRARIES)
+set(LIBRARIES)
 
 ### OpenCV support ###
 FIND_PACKAGE(OpenCV REQUIRED)
@@ -23,29 +24,41 @@ endif()
 ### X11 support ###
 if(NTS_COMPILE_ON_LINUX)
 	find_package(X11 REQUIRED)
-	if(X11_FOUND)
+	if(X11_FOUND AND X11_XTest_FOUND)
 		include_directories(${X11_INCLUDE_DIRS} ${X11_XTest_INCLUDE_PATH})
 		set(LIBRARIES ${LIBRARIES} ${X11_LIBRARIES} ${X11_XTest_LIB})
-	endif()	
+	else()
+		message("Required library X11 not found. Please install xorg, xorg-test and the corresponding dev packages.")
+	endif()
 endif()
 
-	
-file(GLOB SRCS_FILES
+message(${LIBRARIES})
+
+### Common source files ###
+file(GLOB SOURCES_FILES
 		NoTouchScreen.cpp
 		exceptions/*.cpp
 		io/*.cpp
 		gestures/*.cpp  
 		)
 
-add_executable(${PROJECT_NAME} Main.cpp ${SRCS_FILES})
-target_link_libraries(${PROJECT_NAME} ${LIBRARIES})
-
-file(GLOB KEY_STROKER_SRCS_FILES
-		KeyStrokerMain.cpp
-		exceptions/*.cpp 
-		io/*.cpp 
+### Platform dependent implementations ###
+if(NTS_COMPILE_ON_WINDOWS)
+    include_directories(${notouchscreen_SOURCE_DIR}/src/io/windows)
+    file(GLOB WINDOWS_SRCS_FILES
+		io/windows/*.cpp
 		)
+    set(SOURCES_FILES ${SOURCES_FILES} ${WINDOWS_SRCS_FILES})
+endif()
 
-add_executable(${PROJECT_NAME}_stroker KeyStrokerMain.cpp ${KEY_STROKER_SRCS_FILES})
-target_link_libraries(${PROJECT_NAME}_stroker ${LIBRARIES}) 
+if(NTS_COMPILE_ON_LINUX)
+    include_directories(${notouchscreen_SOURCE_DIR}/src/io/linux)
+    file(GLOB LINUX_SRCS_FILES
+		io/linux/*.cpp
+		)
+    set(SOURCES_FILES ${SOURCES_FILES} ${LINUX_SRCS_FILES})
+endif()
 
+### Linking ###
+add_executable(${PROJECT_NAME} Main.cpp ${SOURCES_FILES})
+target_link_libraries(${PROJECT_NAME} ${LIBRARIES})

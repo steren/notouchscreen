@@ -20,33 +20,26 @@ class KeyStroker {
 public:
 	enum Key
 	{
-
-#ifdef LINUX
-		LeftKey=XK_Left,
-		RightKey=XK_Right,
-		UpKey=XK_Up,
-		DownKey=XK_Down
-#endif
-
+		LeftKey,
+		RightKey,
+		UpKey,
+		DownKey
 	};
 
-	KeyStroker();
 	virtual ~KeyStroker();
 
 	/**
 	 * Stroke a key.
 	 * iCtrl, iAlt and iShift is for using combos with left ctrl, left alt and left shift.
 	 */
-	void StrokeKey(KeyStroker::Key iKey, bool iCtrl = false, bool iAlt = false, bool iShift = false);
+	virtual void StrokeKey(KeyStroker::Key iKey, bool iCtrl = false, bool iAlt = false, bool iShift = false) = 0;
+
+protected:
+	KeyStroker();
 
 private:
 	KeyStroker(const KeyStroker&);
 	KeyStroker& operator= (const KeyStroker&);
-
-#ifdef LINUX
-	Display * m_X11Display;
-#endif
-
 };
 
 #endif /* KEYSTROKER_H_ */
