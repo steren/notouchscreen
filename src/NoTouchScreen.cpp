@@ -10,6 +10,20 @@
 #include <iostream>
 #include <ctime>
 
+#include "KeyStroker.h"
+#include "NoTouchScreenException.h"
+
+#include "config.h"
+#ifdef WINDOWS
+#include <windows.h>
+#endif
+#ifdef LINUX
+	#include <X11/Xlib.h>
+	#include <iostream>
+	#include <X11/extensions/XTest.h>
+	#include <unistd.h>
+#endif
+
 NoTouchScreen::NoTouchScreen() {
 }
 
@@ -50,6 +64,11 @@ void NoTouchScreen::MainLoop()
 		Mat mhiVisu; // a display of the MHI
 		Mat capGray;
 		Mat compositingVisu;
+
+		KeyStroker stroker;
+
+		bool buzy = false; // is an action currently performed ?
+		int buzyWait = 0;
 
 		int scoresLeft[SCORE_FRAMES];
 		int scoresRight[SCORE_FRAMES];
@@ -97,18 +116,25 @@ void NoTouchScreen::MainLoop()
 				sumRight += scoresRight[i];
 			}
 
-			/*
-			std::ostringstream ss;
-			ss << sumLeft;
-			cv::putText(compositingVisu, "Score: " + ss.str(), Point(20,100), 1, 1, 255);
-			*/
-			if(sumLeft >= SCORE_WIN) {
-				cv::putText(compositingVisu, "LEFT", Point(50,50), 1, 1, 255);
-			}
-			if(sumRight >= SCORE_WIN) {
-				cv::putText(compositingVisu, "RIGHT", Point(50,50), 1, 1, 255);
+			if(buzyWait > 50) {
+				buzy = false;
+				buzyWait = 0;
 			}
 
+			if(!buzy) {
+				if(sumLeft >= SCORE_WIN) {
+					cv::putText(compositingVisu, "LEFT", Point(50,50), 1, 1, 255);
+					stroker.StrokeKey(KeyStroker::RightKey,true,true);
+					buzy = true;
+				}
+				if(sumRight >= SCORE_WIN) {
+					cv::putText(compositingVisu, "RIGHT", Point(50,50), 1, 1, 255);
+					stroker.StrokeKey(KeyStroker::LeftKey,true,true);
+					buzy = true;
+				}
+			} else {
+				buzyWait++;
+			}
 
 			// Display Orientation with a line
 			if(angle != 0) {
@@ -123,7 +149,7 @@ void NoTouchScreen::MainLoop()
 			imshow("Visu", compositingVisu);
 			imshow("Motion History", mhiVisu);
 
-			if(waitKey(2) >= 0) break;
+			if(waitKey(2) == 1) break;
 		}
 	}
 }
