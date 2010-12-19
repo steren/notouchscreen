@@ -29,7 +29,7 @@ double GestureSignature::compare(Fifo<FrameDescriptorBundle>& framesToCompare) {
 
 	double distance = 0;
 	// TODO : this may not be the ideal way to compare things
-	for( int i = 0; i < m_frames.size(); i++ ) {
+	for( unsigned int i = 0; i < m_frames.size(); i++ ) {
 		distance += m_frames[i].compare(framesToCompare.get(i));
 	}
 

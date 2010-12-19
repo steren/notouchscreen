@@ -32,8 +32,6 @@ if(NTS_COMPILE_ON_LINUX)
 	endif()
 endif()
 
-message(${LIBRARIES})
-
 ### Common source files ###
 file(GLOB SOURCES_FILES
 		NoTouchScreen.cpp
