@@ -3,10 +3,11 @@ include(../config.cmake)
 configure_file(config.h.cmake config.h)
 
 include_directories(
-    ${notouchscreen_SOURCE_DIR}/src 
+    ${notouchscreen_SOURCE_DIR}/src
+    ${notouchscreen_BINARY_DIR}/src 
     ${notouchscreen_SOURCE_DIR}/src/templates
-    ${notouchscreen_SOURCE_DIR}/src/io 
-    ${notouchscreen_BINARY_DIR}/src
+    ${notouchscreen_SOURCE_DIR}/src/io
+    ${notouchscreen_SOURCE_DIR}/src/exceptions 
 	)
 
 set(ADDITIONAL_LIBRARIES)
@@ -29,7 +30,8 @@ endif()
 
 	
 file(GLOB SRCS_FILES
-		NoTouchScreen.cpp 
+		NoTouchScreen.cpp
+		exceptions/*.cpp
 		io/*.cpp 
 		)
 
@@ -37,7 +39,8 @@ add_executable(${PROJECT_NAME} Main.cpp ${SRCS_FILES})
 target_link_libraries(${PROJECT_NAME} ${LIBRARIES})
 
 file(GLOB KEY_STROKER_SRCS_FILES
-		KeyStrokerMain.cpp 
+		KeyStrokerMain.cpp
+		exceptions/*.cpp 
 		io/*.cpp 
 		)
 

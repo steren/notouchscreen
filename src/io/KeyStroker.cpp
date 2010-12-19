@@ -6,8 +6,9 @@
  */
 
 #include "KeyStroker.h"
-#include "config.h"
+#include "NoTouchScreenException.h"
 
+#include "config.h"
 #ifdef WINDOWS
 #include <windows.h>
 #endif
@@ -21,6 +22,8 @@ KeyStroker::KeyStroker() {
 
 #ifdef LINUX
 	m_X11Display = XOpenDisplay(NULL);
+	if( NULL == m_X11Display)
+		throw NoTouchScreenException("X11 display cannot be opened.");
 #endif
 }
 

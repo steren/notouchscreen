@@ -5,6 +5,7 @@
  *      Author: canard
  */
 #include "KeyStroker.h"
+#include "NoTouchScreenException.h"
 
 #include "config.h"
 #ifdef WINDOWS
@@ -19,6 +20,8 @@
 
 int main(int argc, char * argv[])
 {
+	try
+	{
 	KeyStroker stroker;
 
 #ifdef LINUX
@@ -32,6 +35,11 @@ int main(int argc, char * argv[])
 		stroker.StrokeKey(KeyStroker::LeftKey,true,true);
 	}
 #endif
+	}
+	catch(NoTouchScreenException& iException)
+	{
+		iException.print();
+	}
 
 	return 0;
 }
