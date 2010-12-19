@@ -106,15 +106,10 @@ void NoTouchScreen::MainLoop()
 				frameDescriptors.push( FrameDescriptorBundle(RotationDescriptor(angle)) );
 			}
 			double distanceLeft = panLeft.compare(frameDescriptors);
-			std::ostringstream s1;
-			s1 << distanceLeft;
-			cv::putText(compositingVisu, "Pan Left: " + s1.str(), Point(0,80), 1, 1, 255);
+			printDoubleOnImage(compositingVisu, "Pan Left", distanceLeft, 80);
 
 			double distanceRight = panRight.compare(frameDescriptors);
-			std::ostringstream s2;
-			s2 << distanceRight;
-			cv::putText(compositingVisu, "Pan Right: " + s2.str(), Point(0,100), 1, 1, 255);
-
+			printDoubleOnImage(compositingVisu, "Pan Right", distanceRight, 100);
 
 			if(buzyWait > 50) {
 				buzy = false;
@@ -139,10 +134,7 @@ void NoTouchScreen::MainLoop()
 
 			// Display Orientation with a line
 			if(angle != 0) {
-				// print angle value
-				std::ostringstream s;
-				s << angle;
-				cv::putText(compositingVisu, s.str(), Point(20,20), 1, 1, 255);
+				printDoubleOnImage(compositingVisu, "Angle", angle, 20);
 				int x = static_cast<int>(30.*cos(angle*CV_PI/180));
 				int y = static_cast<int>(30.*sin(angle*CV_PI/180));
 				cv::line(compositingVisu, Point(30,30), Point(30+x,30+y),255, 1);
@@ -154,6 +146,13 @@ void NoTouchScreen::MainLoop()
 			if(waitKey(2) == 1) break;
 		}
 	}
+}
+
+void NoTouchScreen::printDoubleOnImage(cv::Mat image, std::string name, int number, unsigned int y)
+{
+	std::ostringstream s;
+	s << number;
+	cv::putText(image, name + ": " + s.str(), cv::Point(0,y), 1, 1, 255);
 }
 
 cv::Mat& NoTouchScreen::GetNextSilhouette(cv::VideoCapture& iCap)

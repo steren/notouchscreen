@@ -36,6 +36,8 @@ private:
 	 * @param iCap The OpenCV video capture device. MUST be opened().
 	 */
 	cv::Mat& GetNextSilhouette(cv::VideoCapture& iCap);
+
+	void printDoubleOnImage(cv::Mat image, std::string name, int number, unsigned int y);
 };
 
 #endif /* NOTOUCHSCREEN_H_ */
