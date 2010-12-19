@@ -10,6 +10,8 @@
 #include <iostream>
 #include <ctime>
 
+#include "GestureSignature.h"
+
 #include "KeyStroker.h"
 #include "NoTouchScreenException.h"
 
@@ -35,9 +37,10 @@ void NoTouchScreen::MainLoop()
 	const double DURATION 	= 0.7;
 
 	const int SCORE_FRAMES 	= 20;
-	const int SCORE_WIN 	= 10;
 
-	const double SCORE_THRESHOLD = 30;
+	const double PANRIGHT_THRESHOLD = 25.0;
+	const double PANLEFT_THRESHOLD  = 25.0;
+
 	const double SCORE_GOAL_LEFT 	= 0;
 	const double SCORE_GOAL_RIGHT 	= 180;
 
@@ -47,6 +50,7 @@ void NoTouchScreen::MainLoop()
 	namedWindow("Visu", CV_WINDOW_AUTOSIZE);
 	namedWindow("Motion History", CV_WINDOW_AUTOSIZE);
 
+
 	if(cap1.isOpened())
 	{
 		Mat frames[2];
@@ -55,27 +59,38 @@ void NoTouchScreen::MainLoop()
 
 		Mat currentCap;
 		cap1 >> currentCap;
-
 		Mat silhouette;
 		Mat mhi(currentCap.size(), CV_32FC1); // the Motion History image
-
 		Mat mask, orientation;
-
 		Mat mhiVisu; // a display of the MHI
 		Mat capGray;
 		Mat compositingVisu;
+
+		// Define the gestures
+
+		// Pan Right
+		RotationDescriptor leftDescriptor(0);
+		std::vector<FrameDescriptorBundle> panLeftFrames;
+		for(int i = 0; i < SCORE_FRAMES; i++) {
+			panLeftFrames.push_back( FrameDescriptorBundle(leftDescriptor));
+		}
+		GestureSignature panLeft("Pan Left", panLeftFrames);
+
+		// Pan Right
+		RotationDescriptor rightDescriptor(180);
+		std::vector<FrameDescriptorBundle> panRightFrames;
+		for(int i = 0; i < SCORE_FRAMES; i++) {
+			panRightFrames.push_back( FrameDescriptorBundle(rightDescriptor));
+		}
+		GestureSignature panRight("Pan Right", panRightFrames);
+
+		Fifo<FrameDescriptorBundle> frameDescriptors(SCORE_FRAMES, panRightFrames[0]);
 
 		KeyStroker stroker;
 
 		bool buzy = false; // is an action currently performed ?
 		int buzyWait = 0;
 
-		// Define the gestures
-		//std::vector<GestureFrame> panLeftFrames;
-		//GestureSignature panLeft("Pan Left", panLeftFrames);
-
-		Fifo<int>scoresLeft(SCORE_FRAMES, 0);
-		Fifo<int>scoresRight(SCORE_FRAMES, 0);
 
 		double timestamp;
 		for(;;)
@@ -95,36 +110,32 @@ void NoTouchScreen::MainLoop()
 			cv::calcMotionGradient( mhi, mask, orientation, 0.5, 0.05);
 			double angle = cv::calcGlobalOrientation(orientation, mask, mhi, timestamp, DURATION);
 
-			if( angle != 0 && std::abs(angle - SCORE_GOAL_LEFT) < SCORE_THRESHOLD) {
-				scoresLeft.push(1);
-			} else {
-				scoresLeft.push(0);
+			// angle == 0 if no movement detected, this sucks.
+			if(angle != 0) {
+				frameDescriptors.push( FrameDescriptorBundle(RotationDescriptor(angle)) );
 			}
-			if( angle != 0 && std::abs(angle - SCORE_GOAL_RIGHT) < SCORE_THRESHOLD) {
-				scoresRight.push(1);
-			} else {
-				scoresRight.push(0);
-			}
+			double distanceLeft = panLeft.compare(frameDescriptors);
+			std::ostringstream s1;
+			s1 << distanceLeft;
+			cv::putText(compositingVisu, "Pan Left: " + s1.str(), Point(0,80), 1, 1, 255);
 
-			int sumLeft 	= 0;
-			int sumRight 	= 0;
-			for( int i = 0; i < SCORE_FRAMES; i++) {
-				sumLeft += scoresLeft.get(i);
-				sumRight += scoresRight.get(i);
-			}
+			double distanceRight = panRight.compare(frameDescriptors);
+			std::ostringstream s2;
+			s2 << distanceRight;
+			cv::putText(compositingVisu, "Pan Right: " + s2.str(), Point(0,100), 1, 1, 255);
+
 
 			if(buzyWait > 50) {
 				buzy = false;
 				buzyWait = 0;
 			}
-
 			if(!buzy) {
-				if(sumLeft >= SCORE_WIN) {
+				if(distanceLeft < PANLEFT_THRESHOLD * SCORE_FRAMES) {
 					cv::putText(compositingVisu, "LEFT", Point(50,50), 1, 1, 255);
 					stroker.StrokeKey(KeyStroker::RightKey,true,true);
 					buzy = true;
 				}
-				if(sumRight >= SCORE_WIN) {
+				if(distanceRight < PANRIGHT_THRESHOLD * SCORE_FRAMES) {
 					cv::putText(compositingVisu, "RIGHT", Point(50,50), 1, 1, 255);
 					stroker.StrokeKey(KeyStroker::LeftKey,true,true);
 					buzy = true;

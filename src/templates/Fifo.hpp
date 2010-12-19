@@ -24,6 +24,9 @@ public:
 	void push(const T&);
 
 private:
+	Fifo(const Fifo&);
+	Fifo& operator= (const Fifo&);
+
 	void round();
 	Fifo(const T&);
 	T& operator= (const T&);

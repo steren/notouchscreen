@@ -7,7 +7,8 @@ include_directories(
     ${notouchscreen_BINARY_DIR}/src 
     ${notouchscreen_SOURCE_DIR}/src/templates
     ${notouchscreen_SOURCE_DIR}/src/io
-    ${notouchscreen_SOURCE_DIR}/src/exceptions 
+    ${notouchscreen_SOURCE_DIR}/src/exceptions
+    ${notouchscreen_SOURCE_DIR}/src/gestures 
 	)
 
 set(ADDITIONAL_LIBRARIES)
@@ -32,7 +33,8 @@ endif()
 file(GLOB SRCS_FILES
 		NoTouchScreen.cpp
 		exceptions/*.cpp
-		io/*.cpp 
+		io/*.cpp
+		gestures/*.cpp  
 		)
 
 add_executable(${PROJECT_NAME} Main.cpp ${SRCS_FILES})
