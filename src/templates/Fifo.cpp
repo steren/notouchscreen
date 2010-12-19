@@ -45,6 +45,13 @@ T& Fifo<T>::get(unsigned int iIndex) const
 }
 
 template <typename T>
+void Fifo<T>::push(const T& obj)
+{
+	round();
+	getFirst() = obj;
+}
+
+template <typename T>
 void Fifo<T>::round()
 {
 	m_pointers.push_front(m_pointers.back());
