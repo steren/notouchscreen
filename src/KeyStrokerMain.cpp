@@ -6,11 +6,32 @@
  */
 #include "KeyStroker.h"
 
-#include <string>
+#include "config.h"
+#ifdef WINDOWS
+#include <windows.h>
+#endif
+#ifdef LINUX
+	#include <X11/Xlib.h>
+	#include <iostream>
+	#include <X11/extensions/XTest.h>
+	#include <unistd.h>
+#endif
 
 int main(int argc, char * argv[])
 {
-	std::string message = "Ouai gros";
-	KeyStroker::StrokeKey(message.c_str());
+	KeyStroker stroker;
+
+#ifdef LINUX
+	// This snippet uses the shorcut Ctrl + Alt + Direction
+	// to change the desktop on gnome.
+	for(;;)
+	{
+		usleep(3000000);
+		stroker.StrokeKey(KeyStroker::RightKey,true,true);
+		usleep(3000000);
+		stroker.StrokeKey(KeyStroker::LeftKey,true,true);
+	}
+#endif
+
 	return 0;
 }
