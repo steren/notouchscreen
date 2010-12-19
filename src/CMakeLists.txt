@@ -1,29 +1,46 @@
+#Config file
+include(../config.cmake)
+configure_file(config.h.cmake config.h)
+
 include_directories(
     ${notouchscreen_SOURCE_DIR}/src 
-    ${notouchscreen_SOURCE_DIR}/src/templates 
+    ${notouchscreen_SOURCE_DIR}/src/templates
+    ${notouchscreen_SOURCE_DIR}/src/io 
     ${notouchscreen_BINARY_DIR}/src
 	)
 
 set(ADDITIONAL_LIBRARIES)
 
 ### OpenCV support ###
-include(FindPkgConfig)
-pkg_search_module(OPENCV opencv)
-if(OPENCV_FOUND)
-	include_directories(${OPENCV_INCLUDEDIR})
-else()
-	FIND_PACKAGE(OpenCV REQUIRED)
+FIND_PACKAGE(OpenCV REQUIRED)
+if(OpenCV_FOUND)
 	include_directories(${OpenCV_INCLUDE_DIRS})
-	set(ADDITIONAL_LIBRARIES ${OpenCV_LIBS})
-	message(${OpenCV_INCLUDE_DIRS})
+	set(LIBRARIES "${LIBRARIES}" "${OpenCV_LIBS}")
 endif()
-						
-file(GLOB SRCS_FILES 
-		*.cpp 
+
+### X11 support ###
+if(NTS_COMPILE_ON_LINUX)
+	find_package(X11 REQUIRED)
+	if(X11_FOUND)
+		include_directories(${X11_INCLUDE_DIRS} ${X11_XTest_INCLUDE_PATH})
+		set(LIBRARIES ${LIBRARIES} ${X11_LIBRARIES} ${X11_XTest_LIB})
+	endif()	
+endif()
+
+	
+file(GLOB SRCS_FILES
+		NoTouchScreen.cpp 
+		io/*.cpp 
 		)
 
-add_executable(${PROJECT_NAME} Main.cpp ${SRCS_FILES}) 
-# install(TARGETS freebalance DESTINATION ./)
+add_executable(${PROJECT_NAME} Main.cpp ${SRCS_FILES})
+target_link_libraries(${PROJECT_NAME} ${LIBRARIES})
 
-### Linking ###
-target_link_libraries(${PROJECT_NAME} ${OPENCV_LIBRARIES} ${ADDITIONAL_LIBRARIES})
+file(GLOB KEY_STROKER_SRCS_FILES
+		KeyStrokerMain.cpp 
+		io/*.cpp 
+		)
+
+add_executable(${PROJECT_NAME}_stroker KeyStrokerMain.cpp ${KEY_STROKER_SRCS_FILES})
+target_link_libraries(${PROJECT_NAME}_stroker ${LIBRARIES}) 
+
