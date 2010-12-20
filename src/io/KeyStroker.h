@@ -26,7 +26,6 @@ public:
 		DownKey
 	};
 
-	KeyStroker();
 	virtual ~KeyStroker();
 
 	/**
@@ -34,6 +33,9 @@ public:
 	 * iCtrl, iAlt and iShift is for using combos with left ctrl, left alt and left shift.
 	 */
 	virtual void StrokeKey(KeyStroker::Key iKey, bool iCtrl = false, bool iAlt = false, bool iShift = false) = 0;
+
+protected:
+	KeyStroker();
 
 private:
 	KeyStroker(const KeyStroker&);

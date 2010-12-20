@@ -1,48 +1,37 @@
 /*
- * KeyStroker.h
+ * KeyStrokerLinux.h
  *
  *  Created on: 18 déc. 2010
  *      Author: canard
  */
 
-#ifndef KEYSTROKER_H_
-#define KEYSTROKER_H_
+#ifndef KEYSTROKERLINUX_H_
+#define KEYSTROKERLINUX_H_
+
+
 
 #include "config.h"
-#ifdef WINDOWS
-#endif
 #ifdef LINUX
-	#include <X11/Xlib.h>
-	#include <X11/keysym.h>
-#endif
 
-class KeyStroker {
+#include <vector>
+#include <X11/Xlib.h>
+#include <X11/keysym.h>
+#include "KeyStroker.h"
+
+class KeyStrokerLinux : public KeyStroker
+{
 public:
-	enum Key
-	{
-		LeftKey,
-		RightKey,
-		UpKey,
-		DownKey
-	};
-
-	KeyStroker();
-	virtual ~KeyStroker();
-
-	/**
-	 * Stroke a key.
-	 * iCtrl, iAlt and iShift is for using combos with left ctrl, left alt and left shift.
-	 */
-	virtual void StrokeKey(KeyStroker::Key iKey, bool iCtrl = false, bool iAlt = false, bool iShift = false) = 0;
+	KeyStrokerLinux();
+	virtual ~KeyStrokerLinux();
+	virtual void StrokeKey(KeyStroker::Key iKey, bool iCtrl = false, bool iAlt = false, bool iShift = false);
 
 private:
-	KeyStroker(const KeyStroker&);
-	KeyStroker& operator= (const KeyStroker&);
+	KeyStrokerLinux(const KeyStrokerLinux&);
+	KeyStrokerLinux& operator= (const KeyStrokerLinux&);
 
-#ifdef LINUX
+	std::vector<unsigned int> m_KeyMap;
 	Display * m_X11Display;
-#endif
-
 };
 
+#endif
 #endif /* KEYSTROKER_H_ */

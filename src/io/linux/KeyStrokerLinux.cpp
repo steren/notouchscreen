@@ -1,47 +1,36 @@
 /*
- * KeyStroker.cpp
+ * KeyStrokerLinux.cpp
  *
  *  Created on: 18 déc. 2010
  *      Author: canard
  */
 
-#include "KeyStroker.h"
-#include "NoTouchScreenException.h"
+#include "KeyStrokerLinux.h"
 
 #include "config.h"
-#ifdef WINDOWS
-#include <windows.h>
-#endif
 #ifdef LINUX
-	#include <iostream>
-	#include <X11/extensions/XTest.h>
-	#include <unistd.h>
-#endif
 
-KeyStroker::KeyStroker() {
+#include <X11/extensions/XTest.h>
+#include "NoTouchScreenException.h"
 
-#ifdef LINUX
+KeyStrokerLinux::KeyStrokerLinux() : KeyStroker() {
 	m_X11Display = XOpenDisplay(NULL);
 	if( NULL == m_X11Display)
 		throw NoTouchScreenException("X11 display cannot be opened.");
-#endif
+
+	m_KeyMap.push_back(XK_Left);
+	m_KeyMap.push_back(XK_Right);
+	m_KeyMap.push_back(XK_Up);
+	m_KeyMap.push_back(XK_Down);
 }
 
-KeyStroker::~KeyStroker() {
-
-#ifdef LINUX
+KeyStrokerLinux::~KeyStrokerLinux() {
 	XCloseDisplay(m_X11Display);
-#endif
 }
 
-void KeyStroker::StrokeKey(KeyStroker::Key iKey, bool iCtrl, bool iAlt, bool iShift)
+void KeyStrokerLinux::StrokeKey(KeyStroker::Key iKey, bool iCtrl, bool iAlt, bool iShift)
 {
-
-#ifdef WINDOWS
-#endif
-
-#ifdef LINUX
-	unsigned int keycode = XKeysymToKeycode(m_X11Display, iKey);
+	unsigned int keycode = XKeysymToKeycode(m_X11Display, m_KeyMap[iKey]);
 
 	unsigned int KeyCtrl = XKeysymToKeycode(m_X11Display, XK_Control_L);
 	unsigned int KeyAlt = XKeysymToKeycode(m_X11Display, XK_Alt_L);
@@ -69,6 +58,6 @@ void KeyStroker::StrokeKey(KeyStroker::Key iKey, bool iCtrl, bool iAlt, bool iSh
 		XTestFakeKeyEvent(m_X11Display, KeyShift, False, 0);
 
 	XFlush(m_X11Display);
-#endif
-
 }
+
+#endif

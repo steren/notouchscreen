@@ -1,7 +1,7 @@
 #include "KeyStrokerWindows.h"
 #ifdef WINDOWS
 
-KeyStrokerWindows::KeyStrokerWindows()
+KeyStrokerWindows::KeyStrokerWindows() : KeyStroker()
 {
     m_KeyMap.push_back(VK_LEFT);
     m_KeyMap.push_back(VK_RIGHT);
