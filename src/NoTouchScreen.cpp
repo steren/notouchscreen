@@ -41,8 +41,6 @@ void NoTouchScreen::MainLoop()
 
 	VideoCapture cap1(0);
 	namedWindow("Visu", CV_WINDOW_AUTOSIZE);
-	namedWindow("Motion History", CV_WINDOW_AUTOSIZE);
-
 
 	if(cap1.isOpened())
 	{
@@ -54,13 +52,17 @@ void NoTouchScreen::MainLoop()
 		cap1 >> currentCap;
 		Mat silhouette;
 		Mat mhi(currentCap.size(), CV_32FC1); // the Motion History image
-		Mat mask, orientation;
+		Mat mask, orientation, rightRestrictedMask, leftRestrictedMask;
 		Mat mhiVisu; // a display of the MHI
 		Mat capGray;
 		Mat compositingVisu;
 
-		// Define the gestures
+		// A rectangle of the left side of the image
+		Rect leftRect(0,0, (int) (currentCap.size().width / 2), currentCap.size().height);
+		// A rectangle of the right side of the image
+		Rect rightRect((int) (currentCap.size().width / 2), 0, (int) (currentCap.size().width / 2), currentCap.size().height);
 
+		// Define the gestures
 		// Pan Right
 		RotationDescriptor leftDescriptor(0);
 		std::vector<FrameDescriptorBundle> panLeftFrames;
@@ -68,7 +70,6 @@ void NoTouchScreen::MainLoop()
 			panLeftFrames.push_back( FrameDescriptorBundle(leftDescriptor));
 		}
 		GestureSignature panLeft("Pan Left", panLeftFrames);
-
 		// Pan Right
 		RotationDescriptor rightDescriptor(180);
 		std::vector<FrameDescriptorBundle> panRightFrames;
@@ -102,11 +103,23 @@ void NoTouchScreen::MainLoop()
 			cv::add( capGray, mhiVisu, compositingVisu);
 
 			cv::calcMotionGradient( mhi, mask, orientation, 0.5, 0.05);
-			double angle = cv::calcGlobalOrientation(orientation, mask, mhi, timestamp, DURATION);
+			double globalAngle = cv::calcGlobalOrientation(orientation, mask, mhi, timestamp, DURATION);
+
+			// Left Angle
+			leftRestrictedMask = mask;
+			Mat rightImage(leftRestrictedMask, rightRect);
+			rightImage = Scalar(0);
+			double leftAngle = cv::calcGlobalOrientation(orientation, leftRestrictedMask, mhi, timestamp, DURATION);
+
+			// Right Angle
+			rightRestrictedMask = mask;
+			Mat leftImage(rightRestrictedMask, leftRect);
+			leftImage = Scalar(0);
+			double rightAngle = cv::calcGlobalOrientation(orientation, rightRestrictedMask, mhi, timestamp, DURATION);
 
 			// angle == 0 if no movement detected, this sucks.
-			if(angle != 0) {
-				frameDescriptors.push( FrameDescriptorBundle(RotationDescriptor(angle)) );
+			if(globalAngle != 0) {
+				frameDescriptors.push( FrameDescriptorBundle(RotationDescriptor(globalAngle)) );
 			} else {
 				frameDescriptors.push( FrameDescriptorBundle(RotationDescriptor( std::rand() % 360 )) );
 			}
@@ -141,15 +154,14 @@ void NoTouchScreen::MainLoop()
 			}
 
 			// Display Orientation with a line
-			if(angle != 0) {
-				printDoubleOnImage(compositingVisu, "Angle", angle, 20);
-				int x = static_cast<int>(30.*cos(angle*CV_PI/180));
-				int y = static_cast<int>(30.*sin(angle*CV_PI/180));
+			if(globalAngle != 0) {
+				printDoubleOnImage(compositingVisu, "Angle", globalAngle, 20);
+				int x = static_cast<int>(30.*cos(globalAngle*CV_PI/180));
+				int y = static_cast<int>(30.*sin(globalAngle*CV_PI/180));
 				cv::line(compositingVisu, Point(30,30), Point(30+x,30+y),255, 1);
 			}
 
 			imshow("Visu", compositingVisu);
-			imshow("Motion History", mhiVisu);
 
 			if( OpenCvHighGuiEchapKeyCode == waitKey(2) )
 				break;
