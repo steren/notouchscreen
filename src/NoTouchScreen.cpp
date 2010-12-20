@@ -60,14 +60,12 @@ void NoTouchScreen::MainLoop()
 		bool buzy = false; // is an action currently performed ?
 		int buzyWait = 0;
 
-		int scoresLeft[SCORE_FRAMES];
-		int scoresRight[SCORE_FRAMES];
-		int scoreIndex = 0;
+		// Define the gestures
+		//std::vector<GestureFrame> panLeftFrames;
+		//GestureSignature panLeft("Pan Left", panLeftFrames);
 
-		for( int i = 0; i < SCORE_FRAMES; i++) {
-			scoresLeft[i] = 0;
-			scoresRight[i] = 0;
-		}
+		Fifo<int>scoresLeft(SCORE_FRAMES, 0);
+		Fifo<int>scoresRight(SCORE_FRAMES, 0);
 
 		double timestamp;
 		for(;;)
@@ -87,23 +85,22 @@ void NoTouchScreen::MainLoop()
 			cv::calcMotionGradient( mhi, mask, orientation, 0.5, 0.05);
 			double angle = cv::calcGlobalOrientation(orientation, mask, mhi, timestamp, DURATION);
 
-			scoreIndex = scoreIndex++ % SCORE_FRAMES;
 			if( angle != 0 && std::abs(angle - SCORE_GOAL_LEFT) < SCORE_THRESHOLD) {
-				scoresLeft[scoreIndex] = 1;
+				scoresLeft.push(1);
 			} else {
-				scoresLeft[scoreIndex] = 0;
+				scoresLeft.push(0);
 			}
 			if( angle != 0 && std::abs(angle - SCORE_GOAL_RIGHT) < SCORE_THRESHOLD) {
-				scoresRight[scoreIndex] = 1;
+				scoresRight.push(1);
 			} else {
-				scoresRight[scoreIndex] = 0;
+				scoresRight.push(0);
 			}
 
 			int sumLeft 	= 0;
 			int sumRight 	= 0;
 			for( int i = 0; i < SCORE_FRAMES; i++) {
-				sumLeft += scoresLeft[i];
-				sumRight += scoresRight[i];
+				sumLeft += scoresLeft.get(i);
+				sumRight += scoresRight.get(i);
 			}
 
 			if(buzyWait > 50) {

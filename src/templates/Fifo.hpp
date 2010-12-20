@@ -21,9 +21,10 @@ public:
 	T& getLast() const;
 	T& get(unsigned int iIndex) const;
 
-	void round();
+	void push(const T&);
 
 private:
+	void round();
 	Fifo(const T&);
 	T& operator= (const T&);
 
