@@ -3,13 +3,11 @@
 #include "config.h"
 #ifdef WINDOWS
     #include "KeyStrokerWindows.h"
+	#define NTS_IOSERVICES_KEYSTROKER KeyStrokerWindows
 #endif
 
 KeyStroker& IoServices::GetKeyStrokerInstance()
 {
-    #ifdef WINDOWS
-    static KeyStrokerWindows stroker;
-    #endif
-
+    static NTS_IOSERVICES_KEYSTROKER stroker;
     return stroker;
 }

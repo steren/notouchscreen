@@ -13,6 +13,7 @@
 #include "KeyStroker.h"
 #include "IoServices.h"
 #include "NoTouchScreenException.h"
+#include "Fifo.hpp"
 
 NoTouchScreen::NoTouchScreen() {
 }
