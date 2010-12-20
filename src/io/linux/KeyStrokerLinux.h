@@ -38,6 +38,11 @@ public:
 private:
 	KeyStroker(const KeyStroker&);
 	KeyStroker& operator= (const KeyStroker&);
+
+#ifdef LINUX
+	Display * m_X11Display;
+#endif
+
 };
 
 #endif /* KEYSTROKER_H_ */

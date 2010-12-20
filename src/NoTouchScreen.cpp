@@ -11,18 +11,8 @@
 #include <ctime>
 
 #include "KeyStroker.h"
+#include "IoServices.h"
 #include "NoTouchScreenException.h"
-
-#include "config.h"
-#ifdef WINDOWS
-#include <windows.h>
-#endif
-#ifdef LINUX
-	#include <X11/Xlib.h>
-	#include <iostream>
-	#include <X11/extensions/XTest.h>
-	#include <unistd.h>
-#endif
 
 NoTouchScreen::NoTouchScreen() {
 }
@@ -65,7 +55,7 @@ void NoTouchScreen::MainLoop()
 		Mat capGray;
 		Mat compositingVisu;
 
-		KeyStroker stroker;
+		KeyStroker& stroker = IoServices::GetKeyStrokerInstance();
 
 		bool buzy = false; // is an action currently performed ?
 		int buzyWait = 0;
@@ -124,12 +114,14 @@ void NoTouchScreen::MainLoop()
 			if(!buzy) {
 				if(sumLeft >= SCORE_WIN) {
 					cv::putText(compositingVisu, "LEFT", Point(50,50), 1, 1, 255);
-					stroker.StrokeKey(KeyStroker::RightKey,true,true);
+					//stroker.StrokeKey(KeyStroker::RightKey,true,true);
+					stroker.StrokeKey(KeyStroker::RightKey);
 					buzy = true;
 				}
 				if(sumRight >= SCORE_WIN) {
 					cv::putText(compositingVisu, "RIGHT", Point(50,50), 1, 1, 255);
-					stroker.StrokeKey(KeyStroker::LeftKey,true,true);
+					//stroker.StrokeKey(KeyStroker::LeftKey,true,true);
+					stroker.StrokeKey(KeyStroker::LeftKey);
 					buzy = true;
 				}
 			} else {
@@ -142,8 +134,9 @@ void NoTouchScreen::MainLoop()
 				std::ostringstream s;
 				s << angle;
 				cv::putText(compositingVisu, s.str(), Point(20,20), 1, 1, 255);
-
-				cv::line(compositingVisu, Point(30,30), Point(30 + 30*cos(angle*CV_PI/180), 30 + 30*sin(angle*CV_PI/180) ),255, 1);
+				int x = static_cast<int>(30.*cos(angle*CV_PI/180));
+				int y = static_cast<int>(30.*sin(angle*CV_PI/180));
+				cv::line(compositingVisu, Point(30,30), Point(30+x,30+y),255, 1);
 			}
 
 			imshow("Visu", compositingVisu);
