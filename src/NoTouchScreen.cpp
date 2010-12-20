@@ -81,6 +81,7 @@ void NoTouchScreen::MainLoop()
 
 		bool buzy = false; // is an action currently performed ?
 		int buzyWait = 0;
+		std::string buzyAction = "";
 
 
 		double timestamp;
@@ -123,14 +124,17 @@ void NoTouchScreen::MainLoop()
 					//stroker.StrokeKey(KeyStroker::RightKey,true,true);
 					stroker.StrokeKey(KeyStroker::RightKey);
 					buzy = true;
+					buzyAction = "left";
 				}
 				if(distanceRight < PANRIGHT_THRESHOLD * SCORE_FRAMES) {
 					cv::putText(compositingVisu, "RIGHT", Point(50,50), 1, 1, 255);
 					//stroker.StrokeKey(KeyStroker::LeftKey,true,true);
 					stroker.StrokeKey(KeyStroker::LeftKey);
 					buzy = true;
+					buzyAction = "right";
 				}
 			} else {
+				cv::putText(compositingVisu, buzyAction + " - WAITING", Point(50,50), 1, 1, 255);
 				buzyWait++;
 			}
 
