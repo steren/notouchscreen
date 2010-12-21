@@ -34,6 +34,7 @@ void NoTouchScreen::MainLoop()
 
 	const double PANRIGHT_THRESHOLD = 25.0;
 	const double PANLEFT_THRESHOLD  = 25.0;
+	const double ZOOMOUT_THRESHOLD  = 40.0;
 
 	const double SCORE_GOAL_LEFT 	= 0;
 	const double SCORE_GOAL_RIGHT 	= 180;
@@ -42,8 +43,6 @@ void NoTouchScreen::MainLoop()
 
 	VideoCapture cap1(0);
 	namedWindow("Visu", CV_WINDOW_AUTOSIZE);
-	namedWindow("Motion History", CV_WINDOW_AUTOSIZE);
-
 
 	if(cap1.isOpened())
 	{
@@ -55,28 +54,31 @@ void NoTouchScreen::MainLoop()
 		cap1 >> currentCap;
 		Mat silhouette;
 		Mat mhi(currentCap.size(), CV_32FC1); // the Motion History image
-		Mat mask, orientation;
+		Mat mask, orientation, rightRestrictedMask, leftRestrictedMask;
 		Mat mhiVisu; // a display of the MHI
 		Mat capGray;
 		Mat compositingVisu;
 
-		// Define the gestures
+		// A rectangle of the left side of the image
+		Rect leftRect(0,0, (int) (currentCap.size().width / 2), currentCap.size().height);
+		// A rectangle of the right side of the image
+		Rect rightRect((int) (currentCap.size().width / 2), 0, (int) (currentCap.size().width / 2), currentCap.size().height);
 
-		// Pan Right
+		// Define the gestures
 		RotationDescriptor leftDescriptor(0);
+		RotationDescriptor rightDescriptor(180);
+
 		std::vector<FrameDescriptorBundle> panLeftFrames;
+		std::vector<FrameDescriptorBundle> panRightFrames;
+		std::vector<FrameDescriptorBundle> zoomOutFrames;
 		for(int i = 0; i < SCORE_FRAMES; i++) {
-			panLeftFrames.push_back( FrameDescriptorBundle(leftDescriptor));
+			panLeftFrames.push_back( FrameDescriptorBundle(leftDescriptor,1,leftDescriptor,0,rightDescriptor,0));
+			panRightFrames.push_back( FrameDescriptorBundle(rightDescriptor,1,leftDescriptor,0,rightDescriptor,0));
+			zoomOutFrames.push_back( FrameDescriptorBundle(rightDescriptor,0,leftDescriptor,0.5,rightDescriptor,0.5));
 		}
 		GestureSignature panLeft("Pan Left", panLeftFrames);
-
-		// Pan Right
-		RotationDescriptor rightDescriptor(180);
-		std::vector<FrameDescriptorBundle> panRightFrames;
-		for(int i = 0; i < SCORE_FRAMES; i++) {
-			panRightFrames.push_back( FrameDescriptorBundle(rightDescriptor));
-		}
 		GestureSignature panRight("Pan Right", panRightFrames);
+		GestureSignature zoomOut("Zoom Out", zoomOutFrames);
 
 		Fifo<FrameDescriptorBundle> frameDescriptors(SCORE_FRAMES, panRightFrames[0]);
 
@@ -103,13 +105,26 @@ void NoTouchScreen::MainLoop()
 			cv::add( capGray, mhiVisu, compositingVisu);
 
 			cv::calcMotionGradient( mhi, mask, orientation, 0.5, 0.05);
-			double angle = cv::calcGlobalOrientation(orientation, mask, mhi, timestamp, DURATION);
+			double globalAngle = cv::calcGlobalOrientation(orientation, mask, mhi, timestamp, DURATION);
+
+			// Left Angle
+			leftRestrictedMask = mask.clone();
+			Mat rightImage(leftRestrictedMask, rightRect);
+			rightImage = Scalar(0);
+			double leftAngle = cv::calcGlobalOrientation(orientation, leftRestrictedMask, mhi, timestamp, DURATION);
+
+			// Right Angle
+			rightRestrictedMask = mask.clone();
+			Mat leftImage(rightRestrictedMask, leftRect);
+			leftImage = Scalar(0);
+			double rightAngle = cv::calcGlobalOrientation(orientation, rightRestrictedMask, mhi, timestamp, DURATION);
 
 			// angle == 0 if no movement detected, this sucks.
-			if(angle != 0) {
-				frameDescriptors.push( FrameDescriptorBundle(RotationDescriptor(angle)) );
+			if(globalAngle != 0) {
+				frameDescriptors.push( FrameDescriptorBundle(RotationDescriptor(globalAngle),0,RotationDescriptor(leftAngle),0,RotationDescriptor(rightAngle),0) );
 			} else {
-				frameDescriptors.push( FrameDescriptorBundle(RotationDescriptor( std::rand() % 360 )) );
+				RotationDescriptor random = RotationDescriptor( std::rand() % 360 );
+				frameDescriptors.push( FrameDescriptorBundle(random,0, random,0, random,0) );
 			}
 			double distanceLeft = panLeft.compare(frameDescriptors);
 			printDoubleOnImage(compositingVisu, "Pan Left", distanceLeft, 80);
@@ -117,22 +132,29 @@ void NoTouchScreen::MainLoop()
 			double distanceRight = panRight.compare(frameDescriptors);
 			printDoubleOnImage(compositingVisu, "Pan Right", distanceRight, 100);
 
+			double distancezoomOut = zoomOut.compare(frameDescriptors);
+			printDoubleOnImage(compositingVisu, "Zoom Out", distancezoomOut, 120);
+
 			if(buzyWait > 50) {
 				buzy = false;
 				buzyWait = 0;
 			}
 			if(!buzy) {
 				if(distanceLeft < PANLEFT_THRESHOLD * SCORE_FRAMES) {
-					cv::putText(compositingVisu, "LEFT", Point(50,50), 1, 1, 255);
 					ActionManager::Instance().SendEvent("OnLeftTranslation");
 					buzy = true;
 					buzyAction = "left";
 				}
 				if(distanceRight < PANRIGHT_THRESHOLD * SCORE_FRAMES) {
-					cv::putText(compositingVisu, "RIGHT", Point(50,50), 1, 1, 255);
 					ActionManager::Instance().SendEvent("OnRightTranslation");
 					buzy = true;
 					buzyAction = "right";
+				}
+				if(distancezoomOut < ZOOMOUT_THRESHOLD * SCORE_FRAMES) {
+					//stroker.StrokeKey(KeyStroker::UpKey,true,true);
+					stroker.StrokeKey(KeyStroker::LeftKey);
+					buzy = true;
+					buzyAction = "Zoom Out";
 				}
 			} else {
 				cv::putText(compositingVisu, buzyAction + " - WAITING", Point(50,50), 1, 1, 255);
@@ -140,15 +162,17 @@ void NoTouchScreen::MainLoop()
 			}
 
 			// Display Orientation with a line
-			if(angle != 0) {
-				printDoubleOnImage(compositingVisu, "Angle", angle, 20);
-				int x = static_cast<int>(30.*cos(angle*CV_PI/180));
-				int y = static_cast<int>(30.*sin(angle*CV_PI/180));
+			if(globalAngle != 0) {
+				printDoubleOnImage(compositingVisu, "Angle", globalAngle, 20);
+				int x = static_cast<int>(30.*cos(globalAngle*CV_PI/180));
+				int y = static_cast<int>(30.*sin(globalAngle*CV_PI/180));
 				cv::line(compositingVisu, Point(30,30), Point(30+x,30+y),255, 1);
+
+				printDoubleOnImage(compositingVisu, "leftAngle", leftAngle, 180);
+				printDoubleOnImage(compositingVisu, "rightAngle", rightAngle, 200);
 			}
 
 			imshow("Visu", compositingVisu);
-			imshow("Motion History", mhiVisu);
 
 			if( OpenCvHighGuiEchapKeyCode == waitKey(2) )
 				break;
