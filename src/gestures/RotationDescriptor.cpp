@@ -4,6 +4,7 @@
  *      Author: steren
  */
 #include <cmath>
+#include <algorithm>
 
 #include "RotationDescriptor.h"
 
@@ -22,5 +23,8 @@ RotationDescriptor::RotationDescriptor( const RotationDescriptor& descriptor ) {
 RotationDescriptor::~RotationDescriptor() {}
 
 double RotationDescriptor::compare(RotationDescriptor& descriptor) {
-	return std::abs(m_angle - descriptor.getAngle());
+
+	// as we are on a circle (0 = 360) take the minimum distance.
+	double dist = std::abs(m_angle - descriptor.getAngle());
+	return std::min(dist, 360.0 - dist);
 }
