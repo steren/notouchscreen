@@ -17,6 +17,8 @@
 #include "NoTouchScreenException.h"
 #include "Fifo.hpp"
 
+#define OpenCvHighGuiEchapKeyCode 1048603
+
 NoTouchScreen::NoTouchScreen() {
 }
 
@@ -151,7 +153,8 @@ void NoTouchScreen::MainLoop()
 			imshow("Visu", compositingVisu);
 			imshow("Motion History", mhiVisu);
 
-			if(waitKey(2) == 1) break;
+			if( OpenCvHighGuiEchapKeyCode == waitKey(2) )
+				break;
 		}
 	}
 }
