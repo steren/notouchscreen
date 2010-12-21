@@ -9,7 +9,9 @@ include_directories(
     ${notouchscreen_SOURCE_DIR}/src/templates
     ${notouchscreen_SOURCE_DIR}/src/io
     ${notouchscreen_SOURCE_DIR}/src/exceptions
-    ${notouchscreen_SOURCE_DIR}/src/gestures 
+    ${notouchscreen_SOURCE_DIR}/src/gestures
+    ${notouchscreen_SOURCE_DIR}/src/action
+    ${notouchscreen_SOURCE_DIR}/src/events 
 	)
 
 set(LIBRARIES)
@@ -19,6 +21,14 @@ FIND_PACKAGE(OpenCV REQUIRED)
 if(OpenCV_FOUND)
 	include_directories(${OpenCV_INCLUDE_DIRS})
 	set(LIBRARIES "${LIBRARIES}" "${OpenCV_LIBS}")
+endif()
+
+### Boost support ###
+FIND_PACKAGE(Boost COMPONENTS regex program_options REQUIRED)
+# SET(Boost_ADDITIONAL_VERSIONS "1.78" "1.78.0" "1.79" "1.79.0")
+if(Boost_FOUND)
+	include_directories(${Boost_INCLUDE_DIRS})
+	set(LIBRARIES "${LIBRARIES}" "${Boost_LIBRARIES}")
 endif()
 
 ### X11 support ###
@@ -37,7 +47,9 @@ file(GLOB SOURCES_FILES
 		NoTouchScreen.cpp
 		exceptions/*.cpp
 		io/*.cpp
-		gestures/*.cpp  
+		gestures/*.cpp
+		action/*.cpp
+		events/*.cpp
 		)
 
 ### Platform dependent implementations ###

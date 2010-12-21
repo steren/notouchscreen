@@ -16,6 +16,7 @@
 #include "IoServices.h"
 #include "NoTouchScreenException.h"
 #include "Fifo.hpp"
+#include "ActionManager.h"
 
 #define OpenCvHighGuiEchapKeyCode 1048603
 
@@ -123,15 +124,13 @@ void NoTouchScreen::MainLoop()
 			if(!buzy) {
 				if(distanceLeft < PANLEFT_THRESHOLD * SCORE_FRAMES) {
 					cv::putText(compositingVisu, "LEFT", Point(50,50), 1, 1, 255);
-					//stroker.StrokeKey(KeyStroker::RightKey,true,true);
-					stroker.StrokeKey(KeyStroker::RightKey);
+					ActionManager::Instance().SendEvent("OnLeftTranslation");
 					buzy = true;
 					buzyAction = "left";
 				}
 				if(distanceRight < PANRIGHT_THRESHOLD * SCORE_FRAMES) {
 					cv::putText(compositingVisu, "RIGHT", Point(50,50), 1, 1, 255);
-					//stroker.StrokeKey(KeyStroker::LeftKey,true,true);
-					stroker.StrokeKey(KeyStroker::LeftKey);
+					ActionManager::Instance().SendEvent("OnRightTranslation");
 					buzy = true;
 					buzyAction = "right";
 				}

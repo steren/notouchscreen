@@ -26,6 +26,14 @@ public:
 		DownKey
 	};
 
+	typedef struct keyid
+	{
+		Key key;
+		bool ctrl;
+		bool alt;
+		bool shift;
+	} KeyID;
+
 	virtual ~KeyStroker();
 
 	/**

@@ -20,4 +20,5 @@ message (STATUS "*** Building opencvtest ${opencvtest_VERSION} ***")
 
 # Main source directory
 add_subdirectory (src)
+add_subdirectory (etc)
 
