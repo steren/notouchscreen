@@ -9,21 +9,20 @@
 #include "IoServices.h"
 
 
-KeystrokeAction::KeystrokeAction(KeyStroker::Key iKey, bool iCtrl, bool iAlt, bool iShift) :
-Action()
-//,m_key({iKey,iCtrl,iAlt,iShift) # C++0x feature
+KeystrokeAction::KeystrokeAction() : Action()
 {
-	m_key.key = iKey;
-	m_key.ctrl = iCtrl;
-	m_key.alt = iAlt;
-	m_key.shift = iShift;
 }
 
 KeystrokeAction::~KeystrokeAction()
 {
 }
 
+void KeystrokeAction::AddKey(const KeyStroker::Key& iKey)
+{
+	m_keys.push_back(iKey);
+}
+
 void KeystrokeAction::Fire()
 {
-	IoServices::GetKeyStrokerInstance().StrokeKey(m_key.key, m_key.ctrl, m_key.alt, m_key.shift);
+	IoServices::GetKeyStrokerInstance().StrokeKeys(m_keys);
 }

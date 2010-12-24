@@ -16,34 +16,29 @@
 	#include <X11/keysym.h>
 #endif
 
+#include <vector>
+
 class KeyStroker {
 public:
 	enum Key
 	{
-		LeftKey,
-		RightKey,
-		UpKey,
-		DownKey
+		Left,
+		Right,
+		Up,
+		Down,
+		Ctrl,
+		Shift,
+		Alt,
+		NumberOfKeys
 	};
 
-	typedef struct keyid
-	{
-		Key key;
-		bool ctrl;
-		bool alt;
-		bool shift;
-	} KeyID;
-
 	virtual ~KeyStroker();
-
-	/**
-	 * Stroke a key.
-	 * iCtrl, iAlt and iShift is for using combos with left ctrl, left alt and left shift.
-	 */
-	virtual void StrokeKey(KeyStroker::Key iKey, bool iCtrl = false, bool iAlt = false, bool iShift = false) = 0;
+	void StrokeKeys( std::vector<Key> iKeys);
 
 protected:
 	KeyStroker();
+	void Clean();
+	virtual void PressKey(Key iKey, bool iPress) = 0;
 
 private:
 	KeyStroker(const KeyStroker&);

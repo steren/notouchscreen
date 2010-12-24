@@ -151,8 +151,7 @@ void NoTouchScreen::MainLoop()
 					buzyAction = "right";
 				}
 				if(distancezoomOut < ZOOMOUT_THRESHOLD * SCORE_FRAMES) {
-					//stroker.StrokeKey(KeyStroker::UpKey,true,true);
-					stroker.StrokeKey(KeyStroker::LeftKey);
+					//ActionManager::Instance().SendEvent("OnLeftTranslation");
 					buzy = true;
 					buzyAction = "Zoom Out";
 				}

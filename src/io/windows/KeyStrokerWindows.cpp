@@ -3,45 +3,26 @@
 
 KeyStrokerWindows::KeyStrokerWindows() : KeyStroker()
 {
-    m_KeyMap.push_back(VK_LEFT);
-    m_KeyMap.push_back(VK_RIGHT);
-    m_KeyMap.push_back(VK_UP);
-    m_KeyMap.push_back(VK_DOWN);
+	m_KeyMap.reserve(NumberOfKeys);
+	m_KeyMap[Left] = VK_LEFT;
+	m_KeyMap[Right] = VK_RIGHT;
+	m_KeyMap[Up] = VK_UP;
+	m_KeyMap[Down] = VK_DOWN;
+	m_KeyMap[Ctrl] = VK_CONTROL;
+	m_KeyMap[Alt] = VK_MENU;
+	m_KeyMap[Shift] = VK_SHIFT;
 }
 
 KeyStrokerWindows::~KeyStrokerWindows()
 {
+	Clean();
 }
 
-/** @brief (implements KeyStroker::StrokeKey)
-  *
-  */
-void KeyStrokerWindows::StrokeKey(KeyStroker::Key iKey, bool iCtrl, bool iAlt, bool iShift)
+void KeyStrokerWindows::PressKey(Key iKey, bool iPress);
 {
     m_Cpt = 0;
     ZeroMemory(m_Input, sizeof m_Input);
-
-    if (iShift)
-    	PushKey(VK_SHIFT);
-
-    if (iCtrl)
-    	PushKey(VK_CONTROL);
-
-    if (iAlt)
-    	PushKey(VK_MENU);
-
-    PushKey(m_KeyMap[iKey]);
-    PushKey(m_KeyMap[iKey], false);
-
-    if (iShift)
-    	PushKey(VK_SHIFT, false);
-
-    if (iCtrl)
-    	PushKey(VK_CONTROL, false);
-
-    if (iAlt)
-    	PushKey(VK_MENU, false);
-
+    PushKey(m_KeyMap[iKey], iPress);
     SendInput(m_Cpt, m_Input, sizeof INPUT);
 }
 

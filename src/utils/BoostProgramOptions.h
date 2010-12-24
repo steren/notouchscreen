@@ -8,6 +8,8 @@
 #ifndef BOOSTPROGRAMOPTIONS_H_
 #define BOOSTPROGRAMOPTIONS_H_
 
+#include "utils/BoostUserConfig.h"
+
 // Boost library for parsing command line
 #include <boost/program_options/cmdline.hpp>
 #include <boost/program_options/environment_iterator.hpp>

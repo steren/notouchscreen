@@ -43,24 +43,28 @@ void ActionManager::FillRegisterWithConfigFile(const std::string& iFileName)
 		boost::smatch matches;
 		if(boost::regex_match(currentLine,matches,exp))
 		{
-			KeyStroker::Key key = KeyStroker::RightKey;
+			KeystrokeAction_var action(new KeystrokeAction());
+
+			if(matches[2] > 0)
+				action->AddKey(KeyStroker::Ctrl);
+
+			if(matches[3] > 0)
+				action->AddKey(KeyStroker::Alt);
+
+			if(matches[4] > 0)
+				action->AddKey(KeyStroker::Shift);
+
 			if(0 == matches[5].compare("Right"))
-				key = KeyStroker::RightKey;
+				action->AddKey(KeyStroker::Right);
 
 			if(0 == matches[5].compare("Left"))
-				key = KeyStroker::LeftKey;
+				action->AddKey(KeyStroker::Left);
 
 			if(0 == matches[5].compare("Up"))
-				key = KeyStroker::UpKey;
+				action->AddKey(KeyStroker::Up);
 
 			if(0 == matches[5].compare("Down"))
-				key = KeyStroker::DownKey;
-
-			Action_var action(new KeystrokeAction(
-					key,
-					matches[2].length() > 0,
-					matches[3].length() > 0,
-					matches[4].length() > 0));
+				action->AddKey(KeyStroker::Down);
 
 			m_Register[matches[1]] = action;
 		}

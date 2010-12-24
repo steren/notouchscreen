@@ -23,7 +23,9 @@ class KeyStrokerLinux : public KeyStroker
 public:
 	KeyStrokerLinux();
 	virtual ~KeyStrokerLinux();
-	virtual void StrokeKey(KeyStroker::Key iKey, bool iCtrl = false, bool iAlt = false, bool iShift = false);
+
+protected:
+	virtual void PressKey(Key iKey, bool iPress);
 
 private:
 	KeyStrokerLinux(const KeyStrokerLinux&);

@@ -10,18 +10,25 @@
 
 #include "Action.h"
 #include "KeyStroker.h"
+#include <vector>
+#include <boost/shared_ptr.hpp>
 
 class KeystrokeAction : public Action
 {
 public:
-	KeystrokeAction(KeyStroker::Key iKey, bool iCtrl = false, bool iAlt = false, bool iShift = false);
-	KeystrokeAction(const KeystrokeAction&);
+	KeystrokeAction();
 	virtual ~KeystrokeAction();
 
+	void AddKey(const KeyStroker::Key& iKey);
 	virtual void Fire();
 
 private:
-	KeyStroker::KeyID m_key;
+	KeystrokeAction(const KeystrokeAction&);
+	KeystrokeAction& operator=(const KeystrokeAction&);
+
+	std::vector<KeyStroker::Key> m_keys;
 };
+
+typedef boost::shared_ptr<KeystrokeAction> KeystrokeAction_var;
 
 #endif /* KEYSTROKEACTION_H_ */

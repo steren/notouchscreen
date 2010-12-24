@@ -15,7 +15,9 @@ public:
     virtual ~KeyStrokerWindows();
 
     /** @see KeyStroker::StrokeKey() */
-    virtual void StrokeKey(KeyStroker::Key iKey, bool iCtrl = false, bool iAlt = false, bool iShift = false);
+
+protected:
+    virtual void PressKey(Key iKey, bool iPress);
 
 private:
     void PushKey(unsigned int iVirtualKeyCode,bool iPress = true);
