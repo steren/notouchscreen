@@ -26,6 +26,8 @@ public:
 	 */
 	void FillRegisterWithConfigFile(const std::string& iFileName);
 
+	void RegisterActionOnEvent(const Event& iEvent,Action_var iAction);
+
 	/** @brief tells the manager a event occured
 	 *
 	 * The corresponding actions (if any) are immediately executed.

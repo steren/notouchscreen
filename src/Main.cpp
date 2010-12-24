@@ -7,13 +7,9 @@
  */
 
 #include "NoTouchScreen.h"
-#include "utils/BoostProgramOptions.h"
 
 #include <string>
 #include <iostream>
-
-#include "ActionManager.h"
-#include "NoTouchScreenException.h"
 
 #include "config.h"
 #ifdef WINDOWS
@@ -22,6 +18,11 @@
 #ifdef LINUX
 	#define NoTouchScreenDefaultConfigFile "./etc/ConfigLinux"
 #endif
+
+#include "BoostProgramOptions.h"
+#include "ActionManager.h"
+#include "NoTouchScreenException.h"
+#include "PythonWrapper.h"
 
 int main(int argc, char * argv[])
 {
@@ -46,7 +47,10 @@ int main(int argc, char * argv[])
 
 	try
 	{
-		ActionManager::Instance().FillRegisterWithConfigFile(OptionsConfigFile);
+		//ActionManager::Instance().FillRegisterWithConfigFile(OptionsConfigFile);
+		// Config with a python script
+		PythonWrapper wrapper;
+		wrapper.test();
 
 		NoTouchScreen instance;
 		instance.MainLoop();

@@ -4,14 +4,16 @@ configure_file(config.h.cmake config.h)
 
 ### Commons includes ###
 include_directories(
-    ${notouchscreen_SOURCE_DIR}/src
-    ${notouchscreen_BINARY_DIR}/src
-    ${notouchscreen_SOURCE_DIR}/src/templates
-    ${notouchscreen_SOURCE_DIR}/src/io
-    ${notouchscreen_SOURCE_DIR}/src/exceptions
-    ${notouchscreen_SOURCE_DIR}/src/gestures
-    ${notouchscreen_SOURCE_DIR}/src/action
-    ${notouchscreen_SOURCE_DIR}/src/events 
+    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_BINARY_DIR}/src
+    ${PROJECT_SOURCE_DIR}/src/templates
+    ${PROJECT_SOURCE_DIR}/src/io
+    ${PROJECT_SOURCE_DIR}/src/exceptions
+    ${PROJECT_SOURCE_DIR}/src/gestures
+    ${PROJECT_SOURCE_DIR}/src/action
+    ${PROJECT_SOURCE_DIR}/src/events
+    ${PROJECT_SOURCE_DIR}/src/python
+    ${PROJECT_SOURCE_DIR}/src/utils 
 	)
 
 set(LIBRARIES)
@@ -24,11 +26,30 @@ if(OpenCV_FOUND)
 endif()
 
 ### Boost support ###
-FIND_PACKAGE(Boost COMPONENTS regex program_options REQUIRED)
+FIND_PACKAGE(Boost COMPONENTS regex program_options python REQUIRED)
 # SET(Boost_ADDITIONAL_VERSIONS "1.78" "1.78.0" "1.79" "1.79.0")
 if(Boost_FOUND)
 	include_directories(${Boost_INCLUDE_DIRS})
-	set(LIBRARIES "${LIBRARIES}" "${Boost_LIBRARIES}")
+	if(NTS_COMPILE_ON_LINUX)
+		set(LIBRARIES "${LIBRARIES}" "${Boost_LIBRARIES}")
+	endif()
+	if(NTS_COMPILE_ON_WINDOWS)
+		link_directories(${Boost_LIBRARY_DIR})
+	endif()
+endif()
+
+### LUA Support ###
+#find_package(Lua51 REQUIRED)
+#if(Boost_FOUND)
+#	include_directories(${Lua51_INCLUDE_DIRS})
+#	set(LIBRARIES "${LIBRARIES}" "${Lua51_LIBRARIES}")
+#endif()
+
+### Python Support ###
+find_package(PythonLibs REQUIRED)
+if(PYTHONLIBS_FOUND)
+	include_directories(${PYTHON_INCLUDE_DIRS})
+	set(LIBRARIES "${LIBRARIES}" "${PYTHON_LIBRARIES}")
 endif()
 
 ### X11 support ###
@@ -50,6 +71,7 @@ file(GLOB SOURCES_FILES
 		gestures/*.cpp
 		action/*.cpp
 		events/*.cpp
+		python/*.cpp
 		)
 
 ### Platform dependent implementations ###

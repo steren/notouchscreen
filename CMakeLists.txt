@@ -16,7 +16,7 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 
 # Centralized version number
 include (version.cmake)
-message (STATUS "*** Building opencvtest ${opencvtest_VERSION} ***")
+message (STATUS "*** Building ${PROJECT_NAME} ${notouchscreen_VERSION} ***")
 
 # Main source directory
 add_subdirectory (src)

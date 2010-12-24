@@ -71,6 +71,11 @@ void ActionManager::FillRegisterWithConfigFile(const std::string& iFileName)
 	}
 }
 
+void ActionManager::RegisterActionOnEvent(const Event& iEvent,Action_var iAction)
+{
+	m_Register[iEvent] = iAction;
+}
+
 void ActionManager::SendEvent(const Event& iEvent)
 {
 	Action_var action = m_Register[iEvent];
