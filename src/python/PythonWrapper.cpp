@@ -7,9 +7,13 @@
 
 #include "PythonWrapper.h"
 #include <boost/python.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/format.hpp>
 #include <string>
+#include <iostream>
 #include "PythonModule.h"
 #include "Event.h"
+#include "NoTouchScreenException.h"
 
 using namespace boost::python;
 
@@ -49,8 +53,12 @@ void PythonWrapper::test()
 		main_namespace["NoTouchScreenMod"] = nts_module;
 
 		// Exec
-		str strPyFileName("etc/config.py");
-		object objectScriptRun = exec_file( strPyFileName, main_namespace, main_namespace );
+		boost::filesystem::path configFile("etc/config.py");
+
+		if( ! boost::filesystem::exists(configFile) )
+			throw NoTouchScreenException(boost::str(boost::format("The config file %1% has not been found.") % configFile));
+
+		object objectScriptRun = exec_file(configFile.file_string().c_str(), main_namespace, main_namespace );
 	}
 	catch( error_already_set& )
 	{

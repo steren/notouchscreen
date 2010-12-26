@@ -26,7 +26,7 @@ if(OpenCV_FOUND)
 endif()
 
 ### Boost support ###
-FIND_PACKAGE(Boost COMPONENTS regex program_options python REQUIRED)
+FIND_PACKAGE(Boost COMPONENTS regex program_options python filesystem REQUIRED)
 # SET(Boost_ADDITIONAL_VERSIONS "1.78" "1.78.0" "1.79" "1.79.0")
 if(Boost_FOUND)
 	include_directories(${Boost_INCLUDE_DIRS})
@@ -34,7 +34,7 @@ if(Boost_FOUND)
 		set(LIBRARIES "${LIBRARIES}" "${Boost_LIBRARIES}")
 	endif()
 	if(NTS_COMPILE_ON_WINDOWS)
-		link_directories(${Boost_LIBRARY_DIR})
+		link_directories(${Boost_LIBRARY_DIRS})
 	endif()
 endif()
 

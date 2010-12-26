@@ -4,6 +4,7 @@
 KeyStrokerWindows::KeyStrokerWindows() : KeyStroker()
 {
 	m_KeyMap.reserve(NumberOfKeys);
+	m_KeyMap.resize(NumberOfKeys);
 	m_KeyMap[Left] = VK_LEFT;
 	m_KeyMap[Right] = VK_RIGHT;
 	m_KeyMap[Up] = VK_UP;
@@ -18,7 +19,7 @@ KeyStrokerWindows::~KeyStrokerWindows()
 	Clean();
 }
 
-void KeyStrokerWindows::PressKey(Key iKey, bool iPress);
+void KeyStrokerWindows::PressKey(Key iKey, bool iPress)
 {
     m_Cpt = 0;
     ZeroMemory(m_Input, sizeof m_Input);

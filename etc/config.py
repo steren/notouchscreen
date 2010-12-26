@@ -9,7 +9,9 @@ print("Config from python script...")
 config=NoTouchScreenMod.NoTouchScreenConfig()
 
 # Configuration of keyboard shorcuts
-config.addActionOnEvent("OnRightTranslation","Ctrl+Alt+Left")
-config.addActionOnEvent("OnLeftTranslation","Ctrl+Alt+Right")
+config.addActionOnEvent("OnRightTranslation","Left")
+config.addActionOnEvent("OnLeftTranslation","Right")
+
+print("Salut Sanglier")
 
 print("Done")

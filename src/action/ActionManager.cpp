@@ -45,13 +45,13 @@ void ActionManager::FillRegisterWithConfigFile(const std::string& iFileName)
 		{
 			KeystrokeAction_var action(new KeystrokeAction());
 
-			if(matches[2] > 0)
+			if(matches[2] == "Ctrl")
 				action->AddKey(KeyStroker::Ctrl);
 
-			if(matches[3] > 0)
+			if(matches[3] == "Alt")
 				action->AddKey(KeyStroker::Alt);
 
-			if(matches[4] > 0)
+			if(matches[4] == "Shift")
 				action->AddKey(KeyStroker::Shift);
 
 			if(0 == matches[5].compare("Right"))

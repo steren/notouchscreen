@@ -3,7 +3,7 @@ Hello !
 
 INSTALLATION INSTRUCTIONS
 
-NoTouchScreen is not available as a precompiled packahe, so you need
+NoTouchScreen is not available as a precompiled package, so you need
 to compile it.
 
  _____________________________________
@@ -16,6 +16,8 @@ It is easier than on Windows
 - Install cmake
 - Install OpenCV with the "dev" and "cv-highgui" packages.
 Simple way: install any package related to OpenCV ^^
+- Installl python (2.x series) with dev packges
+- Install boost libraries and boost headers
 - Install GCC (of course)
 - Install make
 - Download the source or
@@ -47,6 +49,9 @@ you can download and install Visual Studio Express 2010. It is free !
 Find it here: http://www.microsoft.com/express/Downloads/
 If you want to compile on a 64 bits platform, you also need the Microsoft
 Windows SDK, which is free too.
+- Install boost. I recommend you to use the installer from www.boostpro.com
+- Install python 2.6.x from www.python.org. I used the *.msi installer for windows. Theres a problem with 2.7.x about DLL linking.
+- Add manually "C:\Python26\" (or the directory where you installed it) in the system path
 - Optional: Install Qt. OpenCV can use it if you want for highgui features.
 
 
@@ -54,7 +59,7 @@ Windows SDK, which is free too.
 
 It is necessary to build OpenCV yourself in order to get the OpenCV
 dev files easily found by Cmake when compiling NoTouchScreen. Download
-the soucre at http://opencv.willowgarage.com
+the source at http://opencv.willowgarage.com
 
 - Extract the tarball in a folder. We call it "OpenCVSrcFolder". Be careful
 you may not delete this folder after installation.
@@ -87,8 +92,14 @@ It is available from the start menu.
 - Get into C:\Users\you\whateverplaceyouwant
 - mkdir Build
 - cd Build
-- cmake -G "NMake Makefiles" ..\
-- nmake
+- cmake-gui ../
+- Click on "configure", and select "Nmake files". You should have an error about python.
+- Check the boxes "Grouped" and "Advanced" and in the "PYTHON" groupe, give cmake the rights pathes.
+- Click again on "Configure". Everything should be ok.
+- Click on generate
+- Quit cmake-gui
+- Type "nmake"
+
 
 5) To launch, navigate to C:\Users\you\whateverplaceyouwant\Build\src
 then double click "notouchscreen.exe"

@@ -12,13 +12,21 @@
 
 #include "GestureSignature.h"
 
+#include "config.h"
+#ifdef WINDOWS
+	#define OpenCvHighGuiEchapKeyCode 27
+#endif
+#ifdef LINUX
+	#define OpenCvHighGuiEchapKeyCode 1048603
+#endif
+
 #include "KeyStroker.h"
 #include "IoServices.h"
 #include "NoTouchScreenException.h"
 #include "Fifo.hpp"
 #include "ActionManager.h"
 
-#define OpenCvHighGuiEchapKeyCode 1048603
+
 
 NoTouchScreen::NoTouchScreen() {
 }
@@ -171,10 +179,14 @@ void NoTouchScreen::MainLoop()
 				printDoubleOnImage(compositingVisu, "rightAngle", rightAngle, 200);
 			}
 
-			imshow("Visu", compositingVisu);
+			//imshow("Visu", compositingVisu);
+			imshow("Visu", silhouette);
 
-			if( OpenCvHighGuiEchapKeyCode == waitKey(2) )
+			int key = waitKey(2);
+			if( OpenCvHighGuiEchapKeyCode == key )
+			{
 				break;
+			}
 		}
 	}
 }
