@@ -4,19 +4,46 @@
  *      Author: steren
  */
 
-#include <GestureSignature.h>
+#include "GestureSignature.h"
+#include "ActionManager.h"
 
-GestureSignature::GestureSignature(std::string name, std::vector<FrameDescriptorBundle> frames) {
-	m_name = name;
-	m_frames = frames;
+GestureSignature::GestureSignature(
+		const std::string& iName,
+		const Event& iEventToThrow,
+		std::vector<FrameDescriptorBundle> iFrames,
+		double iThreshold)
+: m_name(iName),
+  m_eventToThrow(iEventToThrow),
+  m_frames(iFrames),
+  m_threshold(iThreshold)
+{
 }
 
-GestureSignature::GestureSignature() {
-	m_name = "Empty";
-	m_frames = std::vector<FrameDescriptorBundle>();
+GestureSignature::GestureSignature() : m_name("Empty"), m_eventToThrow("")
+{
 }
 
 GestureSignature::~GestureSignature() {
+}
+
+const std::string& GestureSignature::getName() const
+{
+	return m_name;
+}
+
+const FrameDescriptorBundle& GestureSignature::get(unsigned int iIndex) const
+{
+	return m_frames[iIndex];
+}
+
+double GestureSignature::getThreshold() const
+{
+	return m_threshold;
+}
+
+void GestureSignature::FireEvent()
+{
+	ActionManager::Instance().SendEvent(m_eventToThrow);
 }
 
 double GestureSignature::compare(Fifo<FrameDescriptorBundle>& framesToCompare) {
