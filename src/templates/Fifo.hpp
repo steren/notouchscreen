@@ -8,14 +8,19 @@
 #ifndef FIFO_H_
 #define FIFO_H_
 
-#include <list>
 
+/**
+ * Any object buffer class
+ *
+ * T must be copiable. The ctor need an init object in order to
+ * allocate the needed memory.
+ */
 template <typename T> class Fifo {
 public:
 	Fifo(unsigned int iSize, T iInitObject);
 	virtual ~Fifo();
 
-	unsigned int size();
+	unsigned int size() const;
 
 	T& getFirst() const;
 	T& getLast() const;
@@ -31,7 +36,8 @@ private:
 	Fifo(const T&);
 	T& operator= (const T&);
 
-	std::list<unsigned int> m_pointers;
+	unsigned int m_size;
+	unsigned int m_pointer;
 	T * m_objects;
 };
 
