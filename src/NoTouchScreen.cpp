@@ -135,13 +135,13 @@ void NoTouchScreen::MainLoop()
 				frameDescriptors.push( FrameDescriptorBundle(random,0, random,0, random,0) );
 			}
 			double distanceLeft = panLeft.compare(frameDescriptors);
-			printDoubleOnImage(compositingVisu, "Pan Left", distanceLeft, 80);
+			printDoubleOnImage(compositingVisu, "Pan Left", static_cast<int>(distanceLeft), 80);
 
 			double distanceRight = panRight.compare(frameDescriptors);
-			printDoubleOnImage(compositingVisu, "Pan Right", distanceRight, 100);
+			printDoubleOnImage(compositingVisu, "Pan Right", static_cast<int>(distanceRight), 100);
 
 			double distancezoomOut = zoomOut.compare(frameDescriptors);
-			printDoubleOnImage(compositingVisu, "Zoom Out", distancezoomOut, 120);
+			printDoubleOnImage(compositingVisu, "Zoom Out", static_cast<int>(distancezoomOut), 120);
 
 			if(buzyWait > 50) {
 				buzy = false;
@@ -170,13 +170,13 @@ void NoTouchScreen::MainLoop()
 
 			// Display Orientation with a line
 			if(globalAngle != 0) {
-				printDoubleOnImage(compositingVisu, "Angle", globalAngle, 20);
+				printDoubleOnImage(compositingVisu, "Angle", static_cast<int>(globalAngle), 20);
 				int x = static_cast<int>(30.*cos(globalAngle*CV_PI/180));
 				int y = static_cast<int>(30.*sin(globalAngle*CV_PI/180));
 				cv::line(compositingVisu, Point(30,30), Point(30+x,30+y),255, 1);
 
-				printDoubleOnImage(compositingVisu, "leftAngle", leftAngle, 180);
-				printDoubleOnImage(compositingVisu, "rightAngle", rightAngle, 200);
+				printDoubleOnImage(compositingVisu, "leftAngle", static_cast<int>(leftAngle), 180);
+				printDoubleOnImage(compositingVisu, "rightAngle", static_cast<int>(rightAngle), 200);
 			}
 
 			//imshow("Visu", compositingVisu);
