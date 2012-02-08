@@ -58,7 +58,7 @@ void PythonWrapper::test()
 		if( ! boost::filesystem::exists(configFile) )
 			throw NoTouchScreenException(boost::str(boost::format("The config file %1% has not been found.") % configFile));
 
-		object objectScriptRun = exec_file(configFile.file_string().c_str(), main_namespace, main_namespace );
+		object objectScriptRun = exec_file(configFile.c_str(), main_namespace, main_namespace );
 	}
 	catch( error_already_set& )
 	{
