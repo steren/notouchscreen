@@ -12,6 +12,4 @@ config=NoTouchScreenMod.NoTouchScreenConfig()
 config.addActionOnEvent("OnRightTranslation","Left")
 config.addActionOnEvent("OnLeftTranslation","Right")
 
-print("Salut Sanglier")
-
 print("Done")
