@@ -1,20 +1,17 @@
 /*
- * KeyStrokerLinux.cpp
+ * KeyStrokerImpl.cpp, linux version
  *
  *  Created on: 18 déc. 2010
- *      Author: canard
+ *      Author: JB Jansen
  */
 
-#include "KeyStrokerLinux.h"
-
-#include "config.h"
-#ifdef LINUX
+#include "KeyStrokerImpl.h"
 
 #include <X11/extensions/XTest.h>
 #include <iostream>
 #include "NoTouchScreenException.h"
 
-KeyStrokerLinux::KeyStrokerLinux() : KeyStroker() {
+KeyStrokerImpl::KeyStrokerImpl() : KeyStroker() {
 	m_X11Display = XOpenDisplay(NULL);
 	if( NULL == m_X11Display)
 		throw NoTouchScreenException("X11 display cannot be opened.");
@@ -29,16 +26,15 @@ KeyStrokerLinux::KeyStrokerLinux() : KeyStroker() {
 	m_KeyMap[Shift] = XK_Shift_L;
 }
 
-KeyStrokerLinux::~KeyStrokerLinux() {
+KeyStrokerImpl::~KeyStrokerImpl() {
 	Clean();
 	XCloseDisplay(m_X11Display);
 }
 
-void KeyStrokerLinux::PressKey(Key iKey, bool iPress)
+void KeyStrokerImpl::PressKey(Key iKey, bool iPress)
 {
 	unsigned int keycode = XKeysymToKeycode(m_X11Display, m_KeyMap[iKey]);
 	XTestFakeKeyEvent(m_X11Display, keycode, iPress ? True : False, 0);
 	XFlush(m_X11Display);
 }
 
-#endif

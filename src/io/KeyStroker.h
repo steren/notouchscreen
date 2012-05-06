@@ -22,14 +22,14 @@ class KeyStroker {
 public:
 	enum Key
 	{
-		Left,
-		Right,
-		Up,
-		Down,
-		Ctrl,
-		Shift,
-		Alt,
-		NumberOfKeys
+		Left = 0,
+		Right = 1,
+		Up = 2,
+		Down = 3,
+		Ctrl = 4,
+		Shift = 5,
+		Alt = 6,
+		NumberOfKeys = 7
 	};
 
 	virtual ~KeyStroker();

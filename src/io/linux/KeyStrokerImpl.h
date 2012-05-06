@@ -5,35 +5,29 @@
  *      Author: canard
  */
 
-#ifndef KEYSTROKERLINUX_H_
-#define KEYSTROKERLINUX_H_
-
-
-
-#include "config.h"
-#ifdef LINUX
+#ifndef KEYSTROKERIMPL_H_
+#define KEYSTROKERIMPL_H_
 
 #include <vector>
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include "KeyStroker.h"
 
-class KeyStrokerLinux : public KeyStroker
+class KeyStrokerImpl : public KeyStroker
 {
 public:
-	KeyStrokerLinux();
-	virtual ~KeyStrokerLinux();
+	KeyStrokerImpl();
+	virtual ~KeyStrokerImpl();
 
 protected:
 	virtual void PressKey(Key iKey, bool iPress);
 
 private:
-	KeyStrokerLinux(const KeyStrokerLinux&);
-	KeyStrokerLinux& operator= (const KeyStrokerLinux&);
+	KeyStrokerImpl(KeyStrokerImpl const &);
+	KeyStrokerImpl& operator= (KeyStrokerImpl const &);
 
 	std::vector<unsigned int> m_KeyMap;
 	Display * m_X11Display;
 };
 
-#endif
-#endif /* KEYSTROKER_H_ */
+#endif /* KEYSTROKERIMPL_H_ */

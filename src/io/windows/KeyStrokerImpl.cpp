@@ -1,7 +1,6 @@
-#include "KeyStrokerWindows.h"
-#ifdef WINDOWS
+#include "KeyStrokerImpl.h"
 
-KeyStrokerWindows::KeyStrokerWindows() : KeyStroker()
+KeyStrokerImpl::KeyStrokerImpl() : KeyStroker()
 {
 	m_KeyMap.reserve(NumberOfKeys);
 	m_KeyMap.resize(NumberOfKeys);
@@ -14,12 +13,12 @@ KeyStrokerWindows::KeyStrokerWindows() : KeyStroker()
 	m_KeyMap[Shift] = VK_SHIFT;
 }
 
-KeyStrokerWindows::~KeyStrokerWindows()
+KeyStrokerImpl::~KeyStrokerImpl()
 {
 	Clean();
 }
 
-void KeyStrokerWindows::PressKey(Key iKey, bool iPress)
+void KeyStrokerImpl::PressKey(Key iKey, bool iPress)
 {
     m_Cpt = 0;
     ZeroMemory(m_Input, sizeof m_Input);
@@ -27,7 +26,7 @@ void KeyStrokerWindows::PressKey(Key iKey, bool iPress)
     SendInput(m_Cpt, m_Input, sizeof INPUT);
 }
 
-void KeyStrokerWindows::PushKey(unsigned int iVirtualKeyCode,bool iPress)
+void KeyStrokerImpl::PushKey(unsigned int iVirtualKeyCode,bool iPress)
 {
 	m_Input[m_Cpt].type = INPUT_KEYBOARD;
 	m_Input[m_Cpt].ki.wVk = iVirtualKeyCode;
@@ -38,4 +37,3 @@ void KeyStrokerWindows::PushKey(unsigned int iVirtualKeyCode,bool iPress)
 	m_Cpt++;
 }
 
-#endif

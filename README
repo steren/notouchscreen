@@ -50,7 +50,7 @@ Find it here: http://www.microsoft.com/express/Downloads/
 If you want to compile on a 64 bits platform, you also need the Microsoft
 Windows SDK, which is free too.
 - Install boost. I recommend you to use the installer from www.boostpro.com
-- Install python 2.6.x from www.python.org. I used the *.msi installer for windows. Theres a problem with 2.7.x about DLL linking.
+- Install python 3.x from www.python.org. I used the *.msi installer for windows.
 - Add manually "C:\Python26\" (or the directory where you installed it) in the system path
 - Optional: Install Qt. OpenCV can use it if you want for highgui features.
 
